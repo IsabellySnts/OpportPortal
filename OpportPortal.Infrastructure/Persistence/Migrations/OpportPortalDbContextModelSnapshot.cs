@@ -56,7 +56,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Candidates");
+                    b.ToTable("Candidates", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Company", b =>
@@ -91,7 +91,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Curriculum", b =>
@@ -129,7 +129,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("CandidateId")
                         .IsUnique();
 
-                    b.ToTable("Curriculums");
+                    b.ToTable("Curriculums", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Experience", b =>
@@ -173,7 +173,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CurriculumId");
 
-                    b.ToTable("Experiences");
+                    b.ToTable("Experiences", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.JobApplication", b =>
@@ -208,7 +208,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("CandidateId", "OpportunityId")
                         .IsUnique();
 
-                    b.ToTable("JobApplications");
+                    b.ToTable("JobApplications", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Opportunity", b =>
@@ -268,7 +268,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Opportunities");
+                    b.ToTable("Opportunities", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.User", b =>
@@ -289,6 +289,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -299,7 +303,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Candidate", b =>
@@ -364,7 +368,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CandidateId");
 
-                            b1.ToTable("Candidates");
+                            b1.ToTable("Candidates", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("CandidateId");
@@ -383,7 +387,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CandidateId");
 
-                            b1.ToTable("Candidates");
+                            b1.ToTable("Candidates", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("CandidateId");
@@ -460,48 +464,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CompanyId");
 
-                            b1.ToTable("Companies");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CompanyId");
-                        });
-
-                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Email", "Email", b1 =>
-                        {
-                            b1.Property<long>("CompanyId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("nvarchar(100)")
-                                .HasColumnName("Email");
-
-                            b1.HasKey("CompanyId");
-
-                            b1.HasIndex("Value")
-                                .IsUnique();
-
-                            b1.ToTable("Companies");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CompanyId");
-                        });
-
-                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Phone", "PhoneNumber", b1 =>
-                        {
-                            b1.Property<long>("CompanyId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(11)
-                                .HasColumnType("nvarchar(11)")
-                                .HasColumnName("PhoneNumber");
-
-                            b1.HasKey("CompanyId");
-
-                            b1.ToTable("Companies");
+                            b1.ToTable("Companies", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("CompanyId");
@@ -523,7 +486,48 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Companies");
+                            b1.ToTable("Companies", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("CompanyId");
+                        });
+
+                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<long>("CompanyId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("Email");
+
+                            b1.HasKey("CompanyId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique();
+
+                            b1.ToTable("Companies", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("CompanyId");
+                        });
+
+                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Phone", "PhoneNumber", b1 =>
+                        {
+                            b1.Property<long>("CompanyId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(11)
+                                .HasColumnType("nvarchar(11)")
+                                .HasColumnName("PhoneNumber");
+
+                            b1.HasKey("CompanyId");
+
+                            b1.ToTable("Companies", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("CompanyId");
@@ -614,7 +618,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Users");
+                            b1.ToTable("Users", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
