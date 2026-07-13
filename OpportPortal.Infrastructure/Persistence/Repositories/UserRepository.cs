@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OpportPortal.Domain.Entities;
 using OpportPortal.Domain.Interfaces.Repositories;
-using OpportPortal.Domain.ValueObjects;
 
 namespace OpportPortal.Infrastructure.Persistence.Repositories;
 
@@ -29,4 +28,7 @@ public class UserRepository : IUserRepository
     public async Task<bool> ExistsByEmailAsync(string email)
         => await _context.Users
             .AnyAsync(u => u.UserEmail.Value == email);
+
+    public async Task<User?> GetByIdAsync(long id)
+        => await _context.Users.FindAsync(id);
 }

@@ -1,0 +1,83 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OpportPortal.Application.Commands.CreateCandidate;
+using OpportPortal.Application.Commands.DeleteCandidate;
+using OpportPortal.Application.Commands.UpdateCandidate;
+using OpportPortal.Application.Common;
+using OpportPortal.Application.Queries.Candidates;
+using OpportPortal.Application.Queries.Candidates.GetAllCandidates;
+using OpportPortal.Application.Queries.Candidates.GetCandidateById;
+
+namespace OpportPortal.API.Controllers;
+
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class CandidateController : Controller
+{
+    private readonly IMediator _mediator;
+
+    public CandidateController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateCandidateCommand request)
+    {
+        var result = await _mediator.DispatchAsync<CreateCandidateCommand, ResultViewModel<long>>(request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return CreatedAtAction(nameof(Create), new { id = result.Data }, result);
+    }
+
+    [HttpPut("{id:long}")]
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateCandidateCommand request)
+    {
+        if (id != request.Id)
+            return BadRequest("Id mismatch.");
+
+        var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        var result = await _mediator.DispatchAsync<DeleteCandidateCommand, ResultViewModel<long>>(
+            new DeleteCandidateCommand(id));
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetById(long id)
+    {
+        var result = await _mediator.DispatchAsync<GetCandidateByIdQuery, ResultViewModel<CandidateResponse>>(
+            new GetCandidateByIdQuery(id));
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _mediator.DispatchAsync<GetAllCandidatesQuery, ResultViewModel<IEnumerable<CandidateResponse>>>(
+            new GetAllCandidatesQuery());
+
+        return Ok(result);
+    }
+}

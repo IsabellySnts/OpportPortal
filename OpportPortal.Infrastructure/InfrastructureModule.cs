@@ -53,6 +53,7 @@ namespace OpportPortal.Infrastructure
         private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICandidateRepository, CandidateRepository>();
 
             return services;
         }
