@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpportPortal.Application.Commands.CreateCandidate;
-using OpportPortal.Application.Commands.DeleteCandidate;
-using OpportPortal.Application.Commands.UpdateCandidate;
+using OpportPortal.Application.Commands.Candidates.CreateCandidate;
+using OpportPortal.Application.Commands.Candidates.DeleteCandidate;
+using OpportPortal.Application.Commands.Candidates.UpdateCandidate;
 using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Candidates;
 using OpportPortal.Application.Queries.Candidates.GetAllCandidates;

@@ -1,13 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using OpportPortal.Application.Commands.CreateCandidate;
-using OpportPortal.Application.Commands.DeleteCandidate;
-using OpportPortal.Application.Commands.Login;
-using OpportPortal.Application.Commands.UpdateCandidate;
+using OpportPortal.Application.Commands.Candidates.CreateCandidate;
+using OpportPortal.Application.Commands.Candidates.DeleteCandidate;
+using OpportPortal.Application.Commands.Candidates.UpdateCandidate;
+using OpportPortal.Application.Commands.Companies.CreateCompany;
+using OpportPortal.Application.Commands.Companies.DeleteCompany;
+using OpportPortal.Application.Commands.Companies.UpdateCompany;
 using OpportPortal.Application.Commands.Users.CreateUser;
+using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Candidates;
 using OpportPortal.Application.Queries.Candidates.GetAllCandidates;
 using OpportPortal.Application.Queries.Candidates.GetCandidateById;
+using OpportPortal.Application.Queries.Companies;
+using OpportPortal.Application.Queries.Companies.GetAllCompanies;
+using OpportPortal.Application.Queries.Companies.GetCompanyById;
 
 namespace OpportPortal.Application;
 
@@ -24,6 +30,11 @@ public static class ApplicationModule
         services.AddScoped<IHandler<DeleteCandidateCommand, ResultViewModel<long>>, DeleteCandidateHandler>();
         services.AddScoped<IHandler<GetCandidateByIdQuery, ResultViewModel<CandidateResponse>>, GetCandidateByIdHandler>();
         services.AddScoped<IHandler<GetAllCandidatesQuery, ResultViewModel<IEnumerable<CandidateResponse>>>, GetAllCandidatesHandler>();
+        services.AddScoped<IHandler<CreateCompanyCommand, ResultViewModel<long>>, CreateCompanyHandler>();
+        services.AddScoped<IHandler<UpdateCompanyCommand, ResultViewModel<long>>, UpdateCompanyHandler>();
+        services.AddScoped<IHandler<DeleteCompanyCommand, ResultViewModel<long>>, DeleteCompanyHandler>();
+        services.AddScoped<IHandler<GetCompanyByIdQuery, ResultViewModel<CompanyResponse>>, GetCompanyByIdHandler>();
+        services.AddScoped<IHandler<GetAllCompaniesQuery, ResultViewModel<IEnumerable<CompanyResponse>>>, GetAllCompaniesHandler>();
         return services;
     }
 }

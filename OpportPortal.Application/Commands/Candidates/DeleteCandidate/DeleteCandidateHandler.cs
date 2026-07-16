@@ -1,7 +1,7 @@
 ﻿using OpportPortal.Application.Common;
 using OpportPortal.Domain.Interfaces.Repositories;
 
-namespace OpportPortal.Application.Commands.DeleteCandidate;
+namespace OpportPortal.Application.Commands.Candidates.DeleteCandidate;
 
 public class DeleteCandidateHandler : IHandler<DeleteCandidateCommand, ResultViewModel<long>>
 {

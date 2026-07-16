@@ -3,7 +3,7 @@ using OpportPortal.Domain.Entities;
 using OpportPortal.Domain.Interfaces.Repositories;
 using OpportPortal.Domain.ValueObjects;
 
-namespace OpportPortal.Application.Commands.CreateCandidate;
+namespace OpportPortal.Application.Commands.Candidates.CreateCandidate;
 
 public class CreateCandidateHandler : IHandler<CreateCandidateCommand, ResultViewModel<long>>
 {

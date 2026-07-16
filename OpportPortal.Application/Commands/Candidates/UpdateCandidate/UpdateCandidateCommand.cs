@@ -1,8 +1,7 @@
-﻿namespace OpportPortal.Application.Commands.CreateCandidate;
+﻿namespace OpportPortal.Application.Commands.Candidates.UpdateCandidate;
 
-public record CreateCandidateCommand
-(
-    long UserId,
+public record UpdateCandidateCommand(
+    long Id,
     string FullName,
     DateTime BirthDate,
     string ZipCode,

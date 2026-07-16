@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpportPortal.Application.Commands.Login;
 using OpportPortal.Application.Commands.Users.CreateUser;
+using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
 
 namespace OpportPortal.API.Controllers;

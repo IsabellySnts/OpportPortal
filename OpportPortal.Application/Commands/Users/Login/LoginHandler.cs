@@ -2,7 +2,7 @@
 using OpportPortal.Domain.Interfaces.Repositories;
 using OpportPortal.Domain.Interfaces.Services;
 
-namespace OpportPortal.Application.Commands.Login;
+namespace OpportPortal.Application.Commands.Users.Login;
 
 public class LoginHandler : IHandler<LoginCommand, ResultViewModel<LoginResponse>>
 {

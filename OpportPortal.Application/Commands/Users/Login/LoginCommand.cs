@@ -1,4 +1,4 @@
-﻿namespace OpportPortal.Application.Commands.Login;
+﻿namespace OpportPortal.Application.Commands.Users.Login;
 
 public record LoginCommand(string Email, string Password);
 

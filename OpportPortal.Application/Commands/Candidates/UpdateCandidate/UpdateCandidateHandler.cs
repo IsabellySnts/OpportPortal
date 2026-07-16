@@ -2,7 +2,7 @@
 using OpportPortal.Domain.Interfaces.Repositories;
 using OpportPortal.Domain.ValueObjects;
 
-namespace OpportPortal.Application.Commands.UpdateCandidate;
+namespace OpportPortal.Application.Commands.Candidates.UpdateCandidate;
 
 public class UpdateCandidateHandler : IHandler<UpdateCandidateCommand, ResultViewModel<long>>
 {
