@@ -2,6 +2,6 @@
 
 public enum OpportunityStatus
 {
-    Activate = 1,
+    Active = 1,
     Closed = 2
 }

@@ -11,6 +11,10 @@ using OpportPortal.Application.Commands.Curriculums.UpdateCurriculum;
 using OpportPortal.Application.Commands.Experiences.CreateExperience;
 using OpportPortal.Application.Commands.Experiences.DeleteExperience;
 using OpportPortal.Application.Commands.Experiences.UpdateExperience;
+using OpportPortal.Application.Commands.Opportunities.CloseOpportunity;
+using OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
+using OpportPortal.Application.Commands.Opportunities.DeleteOpportunity;
+using OpportPortal.Application.Commands.Opportunities.UpdateOpportunity;
 using OpportPortal.Application.Commands.Users.CreateUser;
 using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
@@ -26,6 +30,10 @@ using OpportPortal.Application.Queries.Curriculums.GetCurriculumById;
 using OpportPortal.Application.Queries.Experiences;
 using OpportPortal.Application.Queries.Experiences.GetExperienceById;
 using OpportPortal.Application.Queries.Experiences.GetExperiencesByCurriculumId;
+using OpportPortal.Application.Queries.Opportunities;
+using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
 using OpportPortal.Domain.Interfaces.Repositories;
 
 namespace OpportPortal.Application;
@@ -58,6 +66,13 @@ public static class ApplicationModule
         services.AddScoped<IHandler<DeleteExperienceCommand, ResultViewModel<long>>, DeleteExperienceHandler>();
         services.AddScoped<IHandler<GetExperienceByIdQuery, ResultViewModel<ExperienceResponse>>, GetExperienceByIdHandler>();
         services.AddScoped<IHandler<GetExperiencesByCurriculumIdQuery, ResultViewModel<IEnumerable<ExperienceResponse>>>, GetExperiencesByCurriculumIdHandler>();
+        services.AddScoped<IHandler<CreateOpportunityCommand, ResultViewModel<long>>, CreateOpportunityHandler>();
+        services.AddScoped<IHandler<UpdateOpportunityCommand, ResultViewModel<long>>, UpdateOpportunityHandler>();
+        services.AddScoped<IHandler<CloseOpportunityCommand, ResultViewModel<long>>, CloseOpportunityHandler>();
+        services.AddScoped<IHandler<DeleteOpportunityCommand, ResultViewModel<long>>, DeleteOpportunityHandler>();
+        services.AddScoped<IHandler<GetOpportunityByIdQuery, ResultViewModel<OpportunityResponse>>, GetOpportunityByIdHandler>();
+        services.AddScoped<IHandler<GetAllOpportunitiesQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetAllOpportunitiesHandler>();
+        services.AddScoped<IHandler<GetOpportunitiesByFilterQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetOpportunitiesByFilterHandler>();
 
         return services;
     }

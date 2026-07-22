@@ -15,9 +15,11 @@ public class Opportunity : BaseEntity
     public decimal Salary { get; private set; }
     public OpportunityStatus Status { get; private set; }
     public ICollection<JobApplication> JobApplications { get; private set; } = [];
+    public string State { get; private set; }
 
 
-    public Opportunity(long companyId, string title, string description, OpportunityType type, JobFormat format, string requirements, string fieldOfWork, decimal salary) 
+
+    public Opportunity(long companyId, string title, string description, OpportunityType type, JobFormat format, string requirements, string fieldOfWork, decimal salary, string state) 
         : base()
     {
         if (companyId <= 0)
@@ -38,6 +40,9 @@ public class Opportunity : BaseEntity
         if (salary < 0)
             throw new ArgumentException("Salary cannot be negative.");
 
+        if (string.IsNullOrWhiteSpace(state))
+            throw new ArgumentException("State is required.");
+
         CompanyId = companyId;
         Title = title;
         Description = description;
@@ -47,6 +52,8 @@ public class Opportunity : BaseEntity
         FieldOfWork = fieldOfWork;
         Salary = salary;
         Status = OpportunityStatus.Activate;
+        State = state;
+
     }
 
     private Opportunity()
@@ -60,6 +67,37 @@ public class Opportunity : BaseEntity
             throw new InvalidOperationException("Opportunity is already closed.");
 
         Status = OpportunityStatus.Closed;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Update(string title, string description, OpportunityType type, JobFormat format, string requirements, string fieldOfWork, string state, decimal salary)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Title is required.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new ArgumentException("Description is required.");
+
+        if (string.IsNullOrWhiteSpace(requirements))
+            throw new ArgumentException("Requirements is required.");
+
+        if (string.IsNullOrWhiteSpace(fieldOfWork))
+            throw new ArgumentException("Field of work is required.");
+
+        if (string.IsNullOrWhiteSpace(state))
+            throw new ArgumentException("State is required.");
+
+        if (salary < 0)
+            throw new ArgumentException("Salary cannot be negative.");
+
+        Title = title;
+        Description = description;
+        Type = type;
+        Format = format;
+        Requirements = requirements;
+        FieldOfWork = fieldOfWork;
+        State = state;
+        Salary = salary;
         UpdatedAt = DateTime.UtcNow;
     }
 }
