@@ -55,6 +55,7 @@ namespace OpportPortal.Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICandidateRepository, CandidateRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<ICurriculumRepository, CurriculumRepository>();
 
             return services;
         }

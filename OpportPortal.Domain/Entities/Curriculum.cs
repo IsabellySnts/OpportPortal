@@ -28,4 +28,18 @@ public class Curriculum : BaseEntity
         HardSkills = hardSkills;
         SoftSkills = softSkills;
     }
+
+    public void Update(EducationLevel education, List<string> hardSkills, List<string> softSkills)
+    {
+        if (hardSkills == null || hardSkills.Count == 0)
+            throw new ArgumentException("At least one hard skill is required.");
+
+        if (softSkills == null || softSkills.Count == 0)
+            throw new ArgumentException("At least one soft skill is required.");
+
+        EducationLevel = education;
+        HardSkills = hardSkills;
+        SoftSkills = softSkills;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

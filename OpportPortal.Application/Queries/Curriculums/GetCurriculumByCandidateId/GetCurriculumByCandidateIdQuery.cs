@@ -1,0 +1,3 @@
+﻿namespace OpportPortal.Application.Queries.Curriculums.GetCurriculumByCandidateId;
+
+public record GetCurriculumByCandidateIdQuery(long CandidateId);
