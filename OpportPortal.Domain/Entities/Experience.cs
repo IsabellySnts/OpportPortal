@@ -21,7 +21,7 @@ public class Experience : BaseEntity
         if (string.IsNullOrWhiteSpace(companyName))
             throw new ArgumentException("Company name is required.");
 
-        if (endDate.HasValue && EndDate < startDate)
+        if (endDate.HasValue && endDate < startDate)
             throw new ArgumentException("End date cannot be earlier than start date");
 
         CurriculumId = curriculumId;
@@ -30,6 +30,25 @@ public class Experience : BaseEntity
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
+    }
+
+    public void Update(string jobTitle, string companyName, DateTime startDate, DateTime? endDate, string? description)
+    {
+        if (string.IsNullOrWhiteSpace(jobTitle))
+            throw new ArgumentException("Job title is required.");
+
+        if (string.IsNullOrWhiteSpace(companyName))
+            throw new ArgumentException("Company name is required.");
+
+        if (endDate.HasValue && endDate < startDate)
+            throw new ArgumentException("End date cannot be earlier than start date.");
+
+        JobTitle = jobTitle;
+        CompanyName = companyName;
+        StartDate = startDate;
+        EndDate = endDate;
+        Description = description;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     private Experience()
