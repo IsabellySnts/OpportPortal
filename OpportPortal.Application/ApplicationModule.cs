@@ -11,6 +11,9 @@ using OpportPortal.Application.Commands.Curriculums.UpdateCurriculum;
 using OpportPortal.Application.Commands.Experiences.CreateExperience;
 using OpportPortal.Application.Commands.Experiences.DeleteExperience;
 using OpportPortal.Application.Commands.Experiences.UpdateExperience;
+using OpportPortal.Application.Commands.JobApplications.CreateJobApplication;
+using OpportPortal.Application.Commands.JobApplications.DeleteJobApplication;
+using OpportPortal.Application.Commands.JobApplications.UpdateJobApplicationStatus;
 using OpportPortal.Application.Commands.Opportunities.CloseOpportunity;
 using OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
 using OpportPortal.Application.Commands.Opportunities.DeleteOpportunity;
@@ -30,6 +33,10 @@ using OpportPortal.Application.Queries.Curriculums.GetCurriculumById;
 using OpportPortal.Application.Queries.Experiences;
 using OpportPortal.Application.Queries.Experiences.GetExperienceById;
 using OpportPortal.Application.Queries.Experiences.GetExperiencesByCurriculumId;
+using OpportPortal.Application.Queries.JobApplications;
+using OpportPortal.Application.Queries.JobApplications.GetJobApplicationById;
+using OpportPortal.Application.Queries.JobApplications.GetJobApplicationsByCandidateId;
+using OpportPortal.Application.Queries.JobApplications.GetJobApplicationsByOpportunityId;
 using OpportPortal.Application.Queries.Opportunities;
 using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
@@ -73,6 +80,12 @@ public static class ApplicationModule
         services.AddScoped<IHandler<GetOpportunityByIdQuery, ResultViewModel<OpportunityResponse>>, GetOpportunityByIdHandler>();
         services.AddScoped<IHandler<GetAllOpportunitiesQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetAllOpportunitiesHandler>();
         services.AddScoped<IHandler<GetOpportunitiesByFilterQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetOpportunitiesByFilterHandler>();
+        services.AddScoped<IHandler<CreateJobApplicationCommand, ResultViewModel<long>>, CreateJobApplicationHandler>();
+        services.AddScoped<IHandler<UpdateJobApplicationStatusCommand, ResultViewModel<long>>, UpdateJobApplicationStatusHandler>();
+        services.AddScoped<IHandler<DeleteJobApplicationCommand, ResultViewModel<long>>, DeleteJobApplicationHandler>();
+        services.AddScoped<IHandler<GetJobApplicationByIdQuery, ResultViewModel<JobApplicationResponse>>, GetJobApplicationByIdHandler>();
+        services.AddScoped<IHandler<GetJobApplicationsByCandidateIdQuery, ResultViewModel<IEnumerable<JobApplicationResponse>>>, GetJobApplicationsByCandidateIdHandler>();
+        services.AddScoped<IHandler<GetJobApplicationsByOpportunityIdQuery, ResultViewModel<IEnumerable<JobApplicationResponse>>>, GetJobApplicationsByOpportunityIdHandler>();
 
         return services;
     }

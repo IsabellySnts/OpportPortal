@@ -12,14 +12,14 @@ public class Opportunity : BaseEntity
     public JobFormat Format { get; private set; }
     public string Requirements { get; private set; }
     public string FieldOfWork { get; private set; }
+    public string State { get; private set; }
     public decimal Salary { get; private set; }
     public OpportunityStatus Status { get; private set; }
     public ICollection<JobApplication> JobApplications { get; private set; } = [];
-    public string State { get; private set; }
 
 
 
-    public Opportunity(long companyId, string title, string description, OpportunityType type, JobFormat format, string requirements, string fieldOfWork, decimal salary, string state) 
+    public Opportunity(long companyId, string title, string description, OpportunityType type, JobFormat format, string requirements, string fieldOfWork, string state, decimal salary) 
         : base()
     {
         if (companyId <= 0)
@@ -51,7 +51,7 @@ public class Opportunity : BaseEntity
         Requirements = requirements;
         FieldOfWork = fieldOfWork;
         Salary = salary;
-        Status = OpportunityStatus.Activate;
+        Status = OpportunityStatus.Active;
         State = state;
 
     }

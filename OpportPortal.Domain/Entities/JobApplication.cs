@@ -10,6 +10,18 @@ public class JobApplication : BaseEntity
     public Opportunity Opportunity { get; private set; }
     public JobApplicationStatus Status { get; private set; }
 
+    private static readonly Dictionary<JobApplicationStatus, IEnumerable<JobApplicationStatus>> _validTransitions = new()
+    {
+        [JobApplicationStatus.Registered] = [JobApplicationStatus.UnderReview, JobApplicationStatus.NotAdvanced, JobApplicationStatus.Withdrawn, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.UnderReview] = [JobApplicationStatus.InterviewScheduled, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.InterviewScheduled] = [JobApplicationStatus.FinalProcess, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.FinalProcess] = [JobApplicationStatus.Approved, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.Approved] = [],
+        [JobApplicationStatus.NotAdvanced] = [],
+        [JobApplicationStatus.Withdrawn] = [],
+        [JobApplicationStatus.PositionClosed] = [],
+    };
+
     public JobApplication(long candidateId, long opportunityId) : base()
     {
         CandidateId = candidateId;
@@ -27,7 +39,7 @@ public class JobApplication : BaseEntity
 
     public void Reject()
     {
-        Status = JobApplicationStatus.Rejected;
+        Status = JobApplicationStatus.NotAdvanced;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -36,4 +48,24 @@ public class JobApplication : BaseEntity
         Status = JobApplicationStatus.Approved;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void StartReview() => Transition(JobApplicationStatus.UnderReview);
+    public void MoveToFinalProcess() => Transition(JobApplicationStatus.FinalProcess);
+    public void Withdraw() => Transition(JobApplicationStatus.Withdrawn);
+    public void ClosePosition() => Transition(JobApplicationStatus.PositionClosed);
+
+    private void Transition(JobApplicationStatus newStatus)
+    {
+        if (!_validTransitions[Status].Contains(newStatus))
+            throw new InvalidOperationException($"Invalid transition: {Status} → {newStatus}.");
+
+        Status = newStatus;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public bool IsActive() =>
+        Status is not (JobApplicationStatus.Approved
+            or JobApplicationStatus.NotAdvanced
+            or JobApplicationStatus.Withdrawn
+            or JobApplicationStatus.PositionClosed);
 }

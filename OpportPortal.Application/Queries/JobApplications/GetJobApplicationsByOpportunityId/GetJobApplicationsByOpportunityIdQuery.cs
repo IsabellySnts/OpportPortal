@@ -1,0 +1,3 @@
+﻿namespace OpportPortal.Application.Queries.JobApplications.GetJobApplicationsByOpportunityId;
+
+public record GetJobApplicationsByOpportunityIdQuery(long OpportunityId);

@@ -56,7 +56,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Candidates", (string)null);
+                    b.ToTable("Candidates");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Company", b =>
@@ -91,7 +91,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Curriculum", b =>
@@ -129,7 +129,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("CandidateId")
                         .IsUnique();
 
-                    b.ToTable("Curriculums", (string)null);
+                    b.ToTable("Curriculums");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Experience", b =>
@@ -173,7 +173,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CurriculumId");
 
-                    b.ToTable("Experiences", (string)null);
+                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.JobApplication", b =>
@@ -208,7 +208,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.HasIndex("CandidateId", "OpportunityId")
                         .IsUnique();
 
-                    b.ToTable("JobApplications", (string)null);
+                    b.ToTable("JobApplications");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Opportunity", b =>
@@ -246,6 +246,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -268,7 +272,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Opportunities", (string)null);
+                    b.ToTable("Opportunities");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.User", b =>
@@ -289,10 +293,6 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -303,7 +303,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("OpportPortal.Domain.Entities.Candidate", b =>
@@ -368,7 +368,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CandidateId");
 
-                            b1.ToTable("Candidates", (string)null);
+                            b1.ToTable("Candidates");
 
                             b1.WithOwner()
                                 .HasForeignKey("CandidateId");
@@ -387,7 +387,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CandidateId");
 
-                            b1.ToTable("Candidates", (string)null);
+                            b1.ToTable("Candidates");
 
                             b1.WithOwner()
                                 .HasForeignKey("CandidateId");
@@ -464,29 +464,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CompanyId");
 
-                            b1.ToTable("Companies", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("CompanyId");
-                        });
-
-                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Cnpj", "Cnpj", b1 =>
-                        {
-                            b1.Property<long>("CompanyId")
-                                .HasColumnType("bigint");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(14)
-                                .HasColumnType("nvarchar(14)")
-                                .HasColumnName("Cnpj");
-
-                            b1.HasKey("CompanyId");
-
-                            b1.HasIndex("Value")
-                                .IsUnique();
-
-                            b1.ToTable("Companies", (string)null);
+                            b1.ToTable("Companies");
 
                             b1.WithOwner()
                                 .HasForeignKey("CompanyId");
@@ -508,7 +486,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Companies", (string)null);
+                            b1.ToTable("Companies");
 
                             b1.WithOwner()
                                 .HasForeignKey("CompanyId");
@@ -527,7 +505,29 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("CompanyId");
 
-                            b1.ToTable("Companies", (string)null);
+                            b1.ToTable("Companies");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CompanyId");
+                        });
+
+                    b.OwnsOne("OpportPortal.Domain.ValueObjects.Cnpj", "Cnpj", b1 =>
+                        {
+                            b1.Property<long>("CompanyId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(14)
+                                .HasColumnType("nvarchar(14)")
+                                .HasColumnName("Cnpj");
+
+                            b1.HasKey("CompanyId");
+
+                            b1.HasIndex("Value")
+                                .IsUnique();
+
+                            b1.ToTable("Companies");
 
                             b1.WithOwner()
                                 .HasForeignKey("CompanyId");
@@ -618,7 +618,7 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                             b1.HasIndex("Value")
                                 .IsUnique();
 
-                            b1.ToTable("Users", (string)null);
+                            b1.ToTable("Users");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
