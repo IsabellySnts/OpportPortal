@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Mappers.Experiences;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Experiences.CreateExperience;
 using OpportPortal.Application.Commands.Experiences.DeleteExperience;
 using OpportPortal.Application.Commands.Experiences.UpdateExperience;
@@ -23,9 +25,9 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateExperienceCommand request)
+    public async Task<IActionResult> Create([FromBody] CreateExperienceRequest request)
     {
-        var result = await _mediator.DispatchAsync<CreateExperienceCommand, ResultViewModel<long>>(request);
+        var result = await _mediator.DispatchAsync<CreateExperienceCommand, ResultViewModel<long>>(request.CreateExperienceRequestToCommand());
 
         if (!result.IsSuccess)
             return BadRequest(result);
