@@ -22,7 +22,7 @@ public class OpportPortalDbContext : DbContext
         {
             e.HasKey(u => u.Id);
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
             e.Property(u => u.Password).IsRequired();
             e.Property(u => u.Type).IsRequired().HasConversion<string>().HasMaxLength(50);
 
@@ -43,7 +43,7 @@ public class OpportPortalDbContext : DbContext
         {
             e.HasKey(c => c.Id);
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
             e.Property(c => c.FullName).IsRequired().HasMaxLength(200);
             e.Property(c => c.UrlLinkedin).HasMaxLength(300);
             e.Property(c => c.CreatedAt).IsRequired();
@@ -117,7 +117,7 @@ public class OpportPortalDbContext : DbContext
         {
             e.HasKey(c => c.Id);
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
             e.Property(c => c.CompanyName).IsRequired().HasMaxLength(200);
             e.Property(c => c.Sector).IsRequired().HasMaxLength(50);
 
@@ -207,7 +207,7 @@ public class OpportPortalDbContext : DbContext
             e.HasKey(c => c.Id);
 
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
 
             e.Property(cv => cv.CreatedAt).IsRequired();
             e.Property(cv => cv.EducationLevel)
@@ -249,7 +249,7 @@ public class OpportPortalDbContext : DbContext
             e.HasKey(ex => ex.Id);
 
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
 
             e.Property(ex => ex.JobTitle)
                 .IsRequired()
@@ -285,7 +285,7 @@ public class OpportPortalDbContext : DbContext
             e.HasKey(ja => ja.Id);
 
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
 
             e.Property(ja => ja.Status)
                 .IsRequired()
@@ -318,7 +318,7 @@ public class OpportPortalDbContext : DbContext
             e.HasKey(o => o.Id);
 
             e.Property(o => o.Id)
-                .ValueGeneratedNever();
+                .UseIdentityColumn();
 
             e.Property(o => o.Title)
                 .IsRequired()

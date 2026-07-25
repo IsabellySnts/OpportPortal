@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Mappers;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Candidates.CreateCandidate;
 using OpportPortal.Application.Commands.Candidates.DeleteCandidate;
 using OpportPortal.Application.Commands.Candidates.UpdateCandidate;
@@ -14,7 +16,7 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CandidateController : Controller
+public class CandidateController : BaseController
 {
     private readonly IMediator _mediator;
 
@@ -24,9 +26,11 @@ public class CandidateController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateCandidateCommand request)
+    public async Task<IActionResult> Create([FromBody] CreateCandidateRequest request)
     {
-        var result = await _mediator.DispatchAsync<CreateCandidateCommand, ResultViewModel<long>>(request);
+        var userId = GetUserId(); 
+
+        var result = await _mediator.DispatchAsync<CreateCandidateCommand, ResultViewModel<long>>(request.MapToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);

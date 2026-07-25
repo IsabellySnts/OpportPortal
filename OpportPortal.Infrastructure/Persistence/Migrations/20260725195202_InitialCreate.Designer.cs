@@ -12,8 +12,8 @@ using OpportPortal.Infrastructure.Persistence;
 namespace OpportPortal.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(OpportPortalDbContext))]
-    [Migration("20260611204237_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20260725195202_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.Candidate", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -65,7 +68,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.Company", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -100,7 +106,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.Curriculum", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CandidateId")
                         .HasColumnType("bigint");
@@ -138,7 +147,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.Experience", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -182,7 +194,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.JobApplication", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CandidateId")
                         .HasColumnType("bigint");
@@ -217,7 +232,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.Opportunity", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CompanyId")
                         .HasColumnType("bigint");
@@ -249,6 +267,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -277,7 +299,10 @@ namespace OpportPortal.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("OpportPortal.Domain.Entities.User", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");

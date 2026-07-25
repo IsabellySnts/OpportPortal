@@ -38,7 +38,7 @@ public class CreateCandidateHandler : IHandler<CreateCandidateCommand, ResultVie
             request.Complement
         );
 
-        var phone = new Phone(request.PhoneNumber);
+        var phone = new Phone(value: request.PhoneNumber);
 
         var candidate = new Candidate(
             request.UserId,

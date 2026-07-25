@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using OpportPortal.Domain.Enums;
+using OpportPortal.Domain.Entities;
 using OpportPortal.Domain.Interfaces.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -35,7 +35,7 @@ public class AuthService : IAuthService
         }
     }
 
-    public string GenerateToken(string email, string type)
+    public string GenerateToken(User user)
     {
         var issuer = _configuration["Jwt:Issuer"];
         var audience = _configuration["Jwt:Audience"];
@@ -46,8 +46,9 @@ public class AuthService : IAuthService
 
         var claims = new List<Claim>
         {
-            new Claim("username", email),
-            new Claim(ClaimTypes.Role, type)
+            new Claim("userId", user.Id.ToString()),
+            new Claim("username", user.UserEmail.Value),
+            new Claim(ClaimTypes.Role, user.Type.ToString())
         };
 
         var token = new JwtSecurityToken(issuer, audience, claims, null, DateTime.UtcNow.AddHours(2), credentials);

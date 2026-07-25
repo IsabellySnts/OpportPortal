@@ -30,7 +30,7 @@ public class LoginHandler : IHandler<LoginCommand, ResultViewModel<LoginResponse
         if (!user.Active)
             return ResultViewModel<LoginResponse>.Error("User is inactive.");
 
-        var token = _authService.GenerateToken(user.UserEmail.Value, user.Type.ToString());
+        var token = _authService.GenerateToken(user);
 
         return ResultViewModel<LoginResponse>.Success(new LoginResponse(token), "Authenticated user");
     }

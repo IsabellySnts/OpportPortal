@@ -1,7 +1,9 @@
-﻿namespace OpportPortal.Domain.Interfaces.Services;
+﻿using OpportPortal.Domain.Entities;
+
+namespace OpportPortal.Domain.Interfaces.Services;
 
 public interface IAuthService
 {
     string ComputeHash(string password);
-    string GenerateToken(string email, string type);
+    string GenerateToken(User user);
 }

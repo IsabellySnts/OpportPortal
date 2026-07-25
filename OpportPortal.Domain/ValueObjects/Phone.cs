@@ -6,7 +6,7 @@ public sealed class Phone
 
     public Phone(string value)
     {
-        if (!string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value))
             throw new Exception("Phone is required");
 
         var phoneNumber = RemoveFormatting(value);

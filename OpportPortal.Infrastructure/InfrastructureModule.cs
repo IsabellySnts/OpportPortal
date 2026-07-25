@@ -45,8 +45,32 @@ namespace OpportPortal.Infrastructure
                         ValidAudience = configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
+                    o.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            Console.WriteLine($"📨 Token recebido: {context.Token ?? "NENHUM"}");
+                            return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine($"❌ Token inválido: {context.Exception.Message}");
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Console.WriteLine("✅ Token válido!");
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            Console.WriteLine($"⚠️ Challenge: {context.Error} - {context.ErrorDescription}");
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
-           
+
+
             return services;
         }
 
