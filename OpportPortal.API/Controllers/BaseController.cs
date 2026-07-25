@@ -1,5 +1,4 @@
-﻿// API/Controllers/BaseController.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace OpportPortal.API.Controllers;

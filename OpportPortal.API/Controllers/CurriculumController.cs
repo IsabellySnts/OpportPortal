@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Mappers.Curriculums;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Curriculums.CreateCurriculum;
 using OpportPortal.Application.Commands.Curriculums.DeleteCurriculum;
 using OpportPortal.Application.Commands.Curriculums.UpdateCurriculum;
@@ -13,7 +15,7 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CurriculumController : ControllerBase
+public class CurriculumController : BaseController
 {
     private readonly IMediator _mediator;
 
@@ -23,9 +25,10 @@ public class CurriculumController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateCurriculumCommand request)
+    public async Task<IActionResult> Create([FromBody] CreateCurriculumRequest request)
     {
-        var result = await _mediator.DispatchAsync<CreateCurriculumCommand, ResultViewModel<long>>(request);
+        var userId = GetUserId();
+        var result = await _mediator.DispatchAsync<CreateCurriculumCommand, ResultViewModel<long>>(request.CreateCurriculumRequestToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);
@@ -58,12 +61,9 @@ public class CurriculumController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateCurriculumCommand request)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateCurriculumRequest request)
     {
-        if (id != request.Id)
-            return BadRequest("Id mismatch.");
-
-        var result = await _mediator.DispatchAsync<UpdateCurriculumCommand, ResultViewModel<long>>(request);
+        var result = await _mediator.DispatchAsync<UpdateCurriculumCommand, ResultViewModel<long>>(request.UpdateCurriculumRequestToCommand(id));
 
         if (!result.IsSuccess)
             return BadRequest(result);

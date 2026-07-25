@@ -3,7 +3,7 @@
 namespace OpportPortal.Application.Commands.Curriculums.CreateCurriculum;
 
 public record CreateCurriculumCommand(
-    long CandidateId,
+    long UserId,
     EducationLevel EducationLevel,
     List<string> HardSkills,
     List<string> SoftSkills

@@ -44,4 +44,8 @@ public class CandidateRepository : ICandidateRepository
     => await _context.Candidates
         .Include(c => c.User)
         .ToListAsync();
+
+    public async Task<Candidate?> GetByUserIdAsync(long userId)
+        => await _context.Candidates
+            .FirstOrDefaultAsync(c => c.UserId == userId);
 }
