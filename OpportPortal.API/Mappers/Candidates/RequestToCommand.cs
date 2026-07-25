@@ -24,10 +24,10 @@ internal static class RequestToCommand
         );
     }
 
-    public static UpdateCandidateCommand UpdateCandidateRequestToCommand(this UpdateCandidateRequest request, long userId)
+    public static UpdateCandidateCommand UpdateCandidateRequestToCommand(this UpdateCandidateRequest request, long id)
     {
         return new UpdateCandidateCommand(
-            userId,
+            id,
             request.FullName,
             request.BirthDate,
             request.ZipCode,

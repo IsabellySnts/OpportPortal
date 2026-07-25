@@ -41,12 +41,7 @@ public class CandidateController : BaseController
     [HttpPut("{id:long}")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateCandidateRequest request)
     {
-        var userId = GetUserId();
-
-        if (id != userId)
-            return BadRequest("Id mismatch.");
-
-        var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request.UpdateCandidateRequestToCommand(userId));
+        var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request.UpdateCandidateRequestToCommand(id));
 
         if (!result.IsSuccess)
             return BadRequest(result);

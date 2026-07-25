@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Mappers.Companies;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Companies.CreateCompany;
 using OpportPortal.Application.Commands.Companies.DeleteCompany;
 using OpportPortal.Application.Commands.Companies.UpdateCompany;
@@ -13,7 +15,7 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CompanyController : ControllerBase
+public class CompanyController : BaseController
 {
     private readonly IMediator _mediator;
 
@@ -23,9 +25,11 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateCompanyCommand request)
+    public async Task<IActionResult> Create([FromBody] CreateCompanyRequest request)
     {
-        var result = await _mediator.DispatchAsync<CreateCompanyCommand, ResultViewModel<long>>(request);
+        var userId = GetUserId();
+
+        var result = await _mediator.DispatchAsync<CreateCompanyCommand, ResultViewModel<long>>(request.CreateCompanyRequestToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);
@@ -55,12 +59,9 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateCompanyCommand request)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateCompanyRequest request)
     {
-        if (id != request.Id)
-            return BadRequest("Id mismatch.");
-
-        var result = await _mediator.DispatchAsync<UpdateCompanyCommand, ResultViewModel<long>>(request);
+        var result = await _mediator.DispatchAsync<UpdateCompanyCommand, ResultViewModel<long>>(request.UpdateCompanyRequestToCommand(id));
 
         if (!result.IsSuccess)
             return BadRequest(result);
