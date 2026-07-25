@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpportPortal.API.Mappers;
+using OpportPortal.API.Mappers.Candidates;
 using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Candidates.CreateCandidate;
 using OpportPortal.Application.Commands.Candidates.DeleteCandidate;
@@ -30,7 +30,7 @@ public class CandidateController : BaseController
     {
         var userId = GetUserId(); 
 
-        var result = await _mediator.DispatchAsync<CreateCandidateCommand, ResultViewModel<long>>(request.MapToCommand(userId));
+        var result = await _mediator.DispatchAsync<CreateCandidateCommand, ResultViewModel<long>>(request.CreateCandidateRequestToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);
@@ -39,12 +39,14 @@ public class CandidateController : BaseController
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateCandidateCommand request)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateCandidateRequest request)
     {
-        if (id != request.Id)
+        var userId = GetUserId();
+
+        if (id != userId)
             return BadRequest("Id mismatch.");
 
-        var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request);
+        var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request.UpdateCandidateRequestToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);
