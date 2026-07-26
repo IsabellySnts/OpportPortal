@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Mappers.JobApplications;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.JobApplications.CreateJobApplication;
 using OpportPortal.Application.Commands.JobApplications.DeleteJobApplication;
 using OpportPortal.Application.Commands.JobApplications.UpdateJobApplicationStatus;
@@ -14,7 +16,7 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class JobApplicationController : ControllerBase
+public class JobApplicationController : BaseController
 {
     private readonly IMediator _mediator;
 
@@ -24,9 +26,11 @@ public class JobApplicationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateJobApplicationCommand request)
+    public async Task<IActionResult> Create([FromBody] CreateJobApplicationRequest request)
     {
-        var result = await _mediator.DispatchAsync<CreateJobApplicationCommand, ResultViewModel<long>>(request);
+        var userId = GetUserId();
+
+        var result = await _mediator.DispatchAsync<CreateJobApplicationCommand, ResultViewModel<long>>(request.CreateJobApplicationRequestToCommand(userId));
 
         if (!result.IsSuccess)
             return BadRequest(result);

@@ -22,7 +22,8 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
 
     public async Task<ResultViewModel<long>> HandleAsync(CreateJobApplicationCommand request)
     {
-        if (await _candidateRepository.GetByIdAsync(request.CandidateId) is null)
+        var candidate = await _candidateRepository.GetByUserIdAsync(request.UserId);
+        if (candidate is null)
             return ResultViewModel<long>.Error("Candidate not found.");
 
         var opportunity = await _opportunityRepository.GetByIdAsync(request.OpportunityId);
@@ -33,10 +34,10 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
         if (opportunity.Status == Domain.Enums.OpportunityStatus.Closed)
             return ResultViewModel<long>.Error("Cannot apply to a closed opportunity.");
 
-        if (await _jobApplicationRepository.ExistsAsync(request.CandidateId, request.OpportunityId))
+        if (await _jobApplicationRepository.ExistsAsync(candidate.Id, request.OpportunityId))
             return ResultViewModel<long>.Error("Candidate already applied to this opportunity.");
 
-        var jobApplication = new JobApplication(request.CandidateId, request.OpportunityId);
+        var jobApplication = new JobApplication(candidate.Id, request.OpportunityId);
 
         var id = await _jobApplicationRepository.Create(jobApplication);
 

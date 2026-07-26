@@ -28,6 +28,7 @@ public class JobApplicationRepository : IJobApplicationRepository
 
     public async Task<IEnumerable<JobApplication>> GetByCandidateIdAsync(long candidateId)
         => await _context.JobApplications
+            .Include(ja => ja.Candidate)
             .Include(ja => ja.Opportunity)
             .Where(ja => ja.CandidateId == candidateId)
             .ToListAsync();
@@ -35,6 +36,7 @@ public class JobApplicationRepository : IJobApplicationRepository
     public async Task<IEnumerable<JobApplication>> GetByOpportunityIdAsync(long opportunityId)
         => await _context.JobApplications
             .Include(ja => ja.Candidate)
+            .Include(ja => ja.Opportunity)
             .Where(ja => ja.OpportunityId == opportunityId)
             .ToListAsync();
 

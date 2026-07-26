@@ -1,29 +1,111 @@
-﻿using OpportPortal.Application.Common;
-using OpportPortal.Domain.Interfaces.Repositories;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OpportPortal.Application.Commands.Opportunities.CloseOpportunity;
+using OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
+using OpportPortal.Application.Commands.Opportunities.DeleteOpportunity;
+using OpportPortal.Application.Commands.Opportunities.UpdateOpportunity;
+using OpportPortal.Application.Common;
+using OpportPortal.Application.Queries.Opportunities;
+using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
+using OpportPortal.Domain.Enums;
 
-namespace OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
+namespace OpportPortal.API.Controllers;
 
-public class GetOpportunitiesByFilterHandler : IHandler<GetOpportunitiesByFilterQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class OpportunityController : ControllerBase
 {
-    private readonly IOpportunityRepository _opportunityRepository;
+    private readonly IMediator _mediator;
 
-    public GetOpportunitiesByFilterHandler(IOpportunityRepository opportunityRepository)
+    public OpportunityController(IMediator mediator)
     {
-        _opportunityRepository = opportunityRepository;
+        _mediator = mediator;
     }
 
-    public async Task<ResultViewModel<IEnumerable<OpportunityResponse>>> HandleAsync(GetOpportunitiesByFilterQuery request)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateOpportunityCommand request)
     {
-        var opportunities = await _opportunityRepository.GetByFilterAsync(
-            request.FieldOfWork, request.State, request.Type, request.Format);
+        var result = await _mediator.DispatchAsync<CreateOpportunityCommand, ResultViewModel<long>>(request);
 
-        var response = opportunities.Select(o => new OpportunityResponse(
-            o.Id, o.CompanyId, o.Company.CompanyName,
-            o.Title, o.Description, o.Type, o.Format,
-            o.Requirements, o.FieldOfWork, o.State,
-            o.Salary, o.Status, o.CreatedAt, o.UpdatedAt
-        ));
+        if (!result.IsSuccess)
+            return BadRequest(result);
 
-        return ResultViewModel<IEnumerable<OpportunityResponse>>.Success(response);
+        return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+    }
+
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetById(long id)
+    {
+        var result = await _mediator.DispatchAsync<GetOpportunityByIdQuery, ResultViewModel<OpportunityResponse>>(
+            new GetOpportunityByIdQuery(id));
+
+        if (!result.IsSuccess)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _mediator.DispatchAsync<GetAllOpportunitiesQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>(
+            new GetAllOpportunitiesQuery());
+
+        return Ok(result);
+    }
+
+    [HttpGet("filter")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetByFilter(
+        [FromQuery] string? fieldOfWork,
+        [FromQuery] string? state,
+        [FromQuery] OpportunityType? type,
+        [FromQuery] JobFormat? format)
+    {
+        var result = await _mediator.DispatchAsync<GetOpportunitiesByFilterQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>(
+            new GetOpportunitiesByFilterQuery(fieldOfWork, state, type, format));
+
+        return Ok(result);
+    }
+
+    [HttpPut("{id:long}")]
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateOpportunityCommand request)
+    {
+        if (id != request.Id)
+            return BadRequest("Id mismatch.");
+
+        var result = await _mediator.DispatchAsync<UpdateOpportunityCommand, ResultViewModel<long>>(request);
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpPatch("{id:long}/close")]
+    public async Task<IActionResult> Close(long id)
+    {
+        var result = await _mediator.DispatchAsync<CloseOpportunityCommand, ResultViewModel<long>>(
+            new CloseOpportunityCommand(id));
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        var result = await _mediator.DispatchAsync<DeleteOpportunityCommand, ResultViewModel<long>>(
+            new DeleteOpportunityCommand(id));
+
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 }
