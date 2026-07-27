@@ -7,6 +7,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import OpportunitiesPage from './pages/opportunity/OpportunitiesPage';
 import CandidateSetupPage from './pages/candidate/CandidateSetupPage';
 import { ReactElement } from 'react';
+import MyApplicationsPage from './pages/candidate/MyApplicationsPage';
 
 
 // Rota protegida
@@ -33,6 +34,11 @@ function App() {
           <Route path="/setup/candidate" element={
             <PrivateRoute>
               <CandidateSetupPage />
+            </PrivateRoute>
+          } />
+          <Route path="/my-applications" element={
+            <PrivateRoute>
+              <MyApplicationsPage />
             </PrivateRoute>
           } />
 
