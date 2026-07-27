@@ -9,6 +9,7 @@ using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Candidates;
 using OpportPortal.Application.Queries.Candidates.GetAllCandidates;
 using OpportPortal.Application.Queries.Candidates.GetCandidateById;
+using OpportPortal.Application.Queries.Candidates.GetCandidateByUserId;
 
 namespace OpportPortal.API.Controllers;
 
@@ -78,6 +79,20 @@ public class CandidateController : BaseController
     {
         var result = await _mediator.DispatchAsync<GetAllCandidatesQuery, ResultViewModel<IEnumerable<CandidateResponse>>>(
             new GetAllCandidatesQuery());
+
+        return Ok(result);
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var userId = GetUserId();
+
+        var result = await _mediator.DispatchAsync<GetCandidateByUserIdQuery, ResultViewModel<CandidateResponse>>(
+            new GetCandidateByUserIdQuery(userId));
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return Ok(result);
     }
