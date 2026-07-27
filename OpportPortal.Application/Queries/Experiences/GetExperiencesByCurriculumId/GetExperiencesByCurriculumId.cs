@@ -1,0 +1,3 @@
+﻿namespace OpportPortal.Application.Queries.Experiences.GetExperiencesByCurriculumId;
+
+public record GetExperiencesByCurriculumIdQuery(long CurriculumId);

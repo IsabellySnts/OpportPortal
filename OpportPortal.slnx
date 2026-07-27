@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="OpportPortal.API/OpportPortal.API.csproj" Id="e332462c-6f1d-438b-bd82-265d7d82824f" />
+  <Project Path="OpportPortal.Application/OpportPortal.Application.csproj" />
+  <Project Path="OpportPortal.Domain/OpportPortal.Domain.csproj" />
+  <Project Path="OpportPortal.Infrastructure/OpportPortal.Infrastructure.csproj" />
+</Solution>

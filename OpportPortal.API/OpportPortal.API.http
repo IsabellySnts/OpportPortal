@@ -1,0 +1,6 @@
+@OpportPortal.API_HostAddress = http://localhost:5170
+
+GET {{OpportPortal.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
