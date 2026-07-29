@@ -28,6 +28,7 @@ using OpportPortal.Application.Queries.Candidates.GetCandidateByUserId;
 using OpportPortal.Application.Queries.Companies;
 using OpportPortal.Application.Queries.Companies.GetAllCompanies;
 using OpportPortal.Application.Queries.Companies.GetCompanyById;
+using OpportPortal.Application.Queries.Companies.GetCompanyByUserId;
 using OpportPortal.Application.Queries.Curriculums;
 using OpportPortal.Application.Queries.Curriculums.GetCurriculumByCandidateId;
 using OpportPortal.Application.Queries.Curriculums.GetCurriculumById;
@@ -40,6 +41,7 @@ using OpportPortal.Application.Queries.JobApplications.GetJobApplicationsByCandi
 using OpportPortal.Application.Queries.JobApplications.GetJobApplicationsByOpportunityId;
 using OpportPortal.Application.Queries.Opportunities;
 using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByCompanyId;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
 using OpportPortal.Domain.Interfaces.Repositories;
@@ -88,7 +90,8 @@ public static class ApplicationModule
         services.AddScoped<IHandler<GetJobApplicationsByCandidateIdQuery, ResultViewModel<IEnumerable<JobApplicationResponse>>>, GetJobApplicationsByCandidateIdHandler>();
         services.AddScoped<IHandler<GetJobApplicationsByOpportunityIdQuery, ResultViewModel<IEnumerable<JobApplicationResponse>>>, GetJobApplicationsByOpportunityIdHandler>();
         services.AddScoped<IHandler<GetCandidateByUserIdQuery, ResultViewModel<CandidateResponse>>, GetCandidateByUserIdHandler>();
-
+        services.AddScoped<IHandler<GetCompanyByUserIdQuery, ResultViewModel<CompanyResponse>>, GetCompanyByUserIdHandler>();
+        services.AddScoped<IHandler<GetOpportunitiesByCompanyIdQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetOpportunitiesByCompanyIdHandler>();
         return services;
     }
 }

@@ -9,6 +9,7 @@ using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Companies;
 using OpportPortal.Application.Queries.Companies.GetAllCompanies;
 using OpportPortal.Application.Queries.Companies.GetCompanyById;
+using OpportPortal.Application.Queries.Companies.GetCompanyByUserId;
 
 namespace OpportPortal.API.Controllers;
 
@@ -77,6 +78,20 @@ public class CompanyController : BaseController
 
         if (!result.IsSuccess)
             return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var userId = GetUserId();
+
+        var result = await _mediator.DispatchAsync<GetCompanyByUserIdQuery, ResultViewModel<CompanyResponse>>(
+            new GetCompanyByUserIdQuery(userId));
+
+        if (!result.IsSuccess)
+            return NotFound(result);
 
         return Ok(result);
     }

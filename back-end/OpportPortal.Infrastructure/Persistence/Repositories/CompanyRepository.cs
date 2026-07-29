@@ -48,4 +48,8 @@ public class CompanyRepository : ICompanyRepository
         _context.Companies.Update(company);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Company?> GetByUserIdAsync(long userId)
+    => await _context.Companies
+        .FirstOrDefaultAsync(c => c.UserId == userId);
 }

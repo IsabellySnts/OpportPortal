@@ -11,4 +11,6 @@ public interface ICompanyRepository
     Task<IEnumerable<Company>> GetAllAsync();
     Task Update(Company company);
     Task Delete(Company company);
+    Task<Company?> GetByUserIdAsync(long userId);
+
 }

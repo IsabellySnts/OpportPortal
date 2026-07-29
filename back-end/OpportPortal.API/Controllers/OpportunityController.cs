@@ -7,6 +7,7 @@ using OpportPortal.Application.Commands.Opportunities.UpdateOpportunity;
 using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Opportunities;
 using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
+using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByCompanyId;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
 using OpportPortal.Domain.Enums;
@@ -105,6 +106,15 @@ public class OpportunityController : ControllerBase
 
         if (!result.IsSuccess)
             return BadRequest(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("company/{companyId:long}")]
+    public async Task<IActionResult> GetByCompany(long companyId)
+    {
+        var result = await _mediator.DispatchAsync<GetOpportunitiesByCompanyIdQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>(
+            new GetOpportunitiesByCompanyIdQuery(companyId));
 
         return Ok(result);
     }
