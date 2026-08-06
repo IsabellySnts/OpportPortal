@@ -3,7 +3,7 @@
 namespace OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
 
 public record CreateOpportunityCommand(
-    long CompanyId,
+    long UserId,
     string Title,
     string Description,
     OpportunityType Type,

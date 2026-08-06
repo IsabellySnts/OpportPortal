@@ -19,11 +19,13 @@ public class CreateOpportunityHandler : IHandler<CreateOpportunityCommand, Resul
 
     public async Task<ResultViewModel<long>> HandleAsync(CreateOpportunityCommand request)
     {
-        if (await _companyRepository.GetByIdAsync(request.CompanyId) is null)
+        var company = await _companyRepository.GetByUserIdAsync(request.UserId);
+
+        if (company is null)
             return ResultViewModel<long>.Error("Company not found.");
 
         var opportunity = new Opportunity(
-            request.CompanyId,
+            company.Id, 
             request.Title,
             request.Description,
             request.Type,
