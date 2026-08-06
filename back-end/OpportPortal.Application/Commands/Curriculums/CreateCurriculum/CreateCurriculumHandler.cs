@@ -19,16 +19,16 @@ public class CreateCurriculumHandler : IHandler<CreateCurriculumCommand, ResultV
 
     public async Task<ResultViewModel<long>> HandleAsync(CreateCurriculumCommand request)
     {
-        var candidateId = await _candidateRepository.GetByUserIdAsync(request.UserId);
+        var candidate = await _candidateRepository.GetByUserIdAsync(request.UserId);
 
-        if (candidateId is null)
+        if (candidate is null)
             return ResultViewModel<long>.Error("Candidate not found.");
 
-        if (await _curriculumRepository.ExistsByCandidateIdAsync(request.UserId))
+        if (await _curriculumRepository.ExistsByCandidateIdAsync(candidate.Id))
             return ResultViewModel<long>.Error("Curriculum already exists for this candidate.");
 
         var curriculum = new Curriculum(
-            request.UserId,
+            candidate.Id,
             request.EducationLevel,
             request.HardSkills,
             request.SoftSkills
