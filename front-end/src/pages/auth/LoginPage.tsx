@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService } from '../../services/authService';
+import { Console } from 'console';
+import { candidateService } from '../../services/candidateService';
+import { companyService } from '../../services/companyService';
+import logo from '../../assets/graduate.png'
+
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -13,26 +18,53 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      const result = await authService.login(email, password);
+  try {
+    const result = await authService.login(email, password);
 
-      if (!result.isSuccess) {
-        setError(result.message);
-        return;
-      }
-
-      login(result.data.token);
-      navigate('/opportunities');
-    } catch {
-      setError('Erro ao fazer login. Tente novamente.');
-    } finally {
-      setLoading(false);
+    if (!result.isSuccess) {
+      setError(result.message);
+      return;
     }
-  };
+
+    login(result.data.token);
+
+    const payload = JSON.parse(atob(result.data.token.split('.')[1]));
+    const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    if (role === 'Company') {
+      try {
+        const company = await companyService.getMe();
+        if (company.isSuccess) {
+          navigate('/company/dashboard');
+        } else {
+          navigate('/company/setup');
+        }
+      } catch {
+        navigate('/company/setup'); 
+      }
+    } else {
+      
+      try {
+        const candidate = await candidateService.getMe();
+        if (candidate.isSuccess) {
+          navigate('/opportunities');
+        } else {
+          navigate('/setup/candidate');
+        }
+      } catch {
+        navigate('/setup/candidate'); 
+      }
+    }
+  } catch {
+    setError('Erro ao fazer login. Tente novamente.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex">
@@ -40,8 +72,8 @@ export default function LoginPage() {
         style={{ backgroundColor: '#1B2A4A' }}>
         <div className="text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: '#F5A623' }}>
-            <span className="text-white font-bold text-2xl">P</span>
+            style={{ backgroundColor: '#FFFFFF' }}>
+            <img src={logo} alt="Logo" className="w-6 h-6 object-contain" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">
             OpportPortal
