@@ -4,16 +4,17 @@ import { useAuth } from '../../contexts/AuthContext';
 import { candidateService } from '../../services/candidateService';
 import { jobApplicationService } from '../../services/jobApplicationService';
 import { JobApplication, JobApplicationStatus } from '../../types';
+import Header from '../../components/layout/Header';
 
 const statusConfig: Record<number, { label: string; bg: string; color: string }> = {
-  [JobApplicationStatus.Registered]:         { label: 'Candidatura enviada', bg: '#EEF2F9', color: '#1B2A4A' },
-  [JobApplicationStatus.UnderReview]:        { label: 'Em análise', bg: '#FEF3E2', color: '#F5A623' },
+  [JobApplicationStatus.Registered]: { label: 'Candidatura enviada', bg: '#EEF2F9', color: '#1B2A4A' },
+  [JobApplicationStatus.UnderReview]: { label: 'Em análise', bg: '#FEF3E2', color: '#F5A623' },
   [JobApplicationStatus.InterviewScheduled]: { label: 'Entrevista agendada', bg: '#E0F2FE', color: '#0284C7' },
-  [JobApplicationStatus.FinalProcess]:       { label: 'Processo final', bg: '#F3E8FF', color: '#9333EA' },
-  [JobApplicationStatus.Approved]:           { label: 'Aprovado', bg: '#DCFCE7', color: '#16A34A' },
-  [JobApplicationStatus.NotAdvanced]:        { label: 'Não avançou', bg: '#FEE2E2', color: '#DC2626' },
-  [JobApplicationStatus.Withdrawn]:          { label: 'Cancelada', bg: '#F3F4F6', color: '#6B7280' },
-  [JobApplicationStatus.PositionClosed]:     { label: 'Vaga encerrada', bg: '#F3F4F6', color: '#6B7280' },
+  [JobApplicationStatus.FinalProcess]: { label: 'Processo final', bg: '#F3E8FF', color: '#9333EA' },
+  [JobApplicationStatus.Approved]: { label: 'Aprovado', bg: '#DCFCE7', color: '#16A34A' },
+  [JobApplicationStatus.NotAdvanced]: { label: 'Não avançou', bg: '#FEE2E2', color: '#DC2626' },
+  [JobApplicationStatus.Withdrawn]: { label: 'Cancelada', bg: '#F3F4F6', color: '#6B7280' },
+  [JobApplicationStatus.PositionClosed]: { label: 'Vaga encerrada', bg: '#F3F4F6', color: '#6B7280' },
 };
 
 export default function MyApplicationsPage() {
@@ -55,33 +56,13 @@ export default function MyApplicationsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Header */}
-      <header className="text-white" style={{ backgroundColor: '#1B2A4A' }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: '#F5A623' }}>
-              <span className="font-bold">P</span>
-            </div>
-            <span className="font-bold text-lg">Portal de Oportunidades</span>
-          </div>
-
-          <nav className="flex items-center gap-8">
-            <button className="hover:opacity-80" onClick={() => navigate('/opportunities')}>
-              Oportunidades
-            </button>
-            <button className="font-semibold" style={{ color: '#F5A623' }}>
-              Candidaturas
-            </button>
-            <button className="hover:opacity-80">Meu Perfil</button>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ backgroundColor: '#F5A623' }}
-              onClick={handleLogout} title="Sair">
-              <span className="font-bold text-sm">IS</span>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header 
+        navItems={[
+          { label: 'Oportunidades', path: '/opportunities' },
+          { label: 'Candidaturas', path: '/my-applications' },
+          { label: 'Meu Perfil', path: '/my-profile' },
+        ]}
+      />
 
       {/* Conteúdo */}
       <main className="max-w-4xl mx-auto px-6 py-8">

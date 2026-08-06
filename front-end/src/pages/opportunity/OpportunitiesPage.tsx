@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { opportunityService } from '../../services/opportunityService';
 import { jobApplicationService } from '../../services/jobApplicationService';
 import { Opportunity, OpportunityType, JobFormat } from '../../types';
+import Header from '../../components/layout/Header';
 
 const typeLabels: Record<number, string> = {
   [OpportunityType.Internship]: 'Estágio',
@@ -88,35 +89,13 @@ export default function OpportunitiesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Header */}
-      <header className="text-white" style={{ backgroundColor: '#1B2A4A' }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: '#F5A623' }}>
-              <span className="font-bold">P</span>
-            </div>
-            <span className="font-bold text-lg">Portal de Oportunidades</span>
-          </div>
-
-          <nav className="flex items-center gap-8">
-            <button className="hover:opacity-80">Início</button>
-            <button className="font-semibold" style={{ color: '#F5A623' }}>
-              Oportunidades
-            </button>
-            <button className="hover:opacity-80" onClick={() => navigate('/my-applications')}>
-              Candidaturas
-            </button>
-            <button className="hover:opacity-80">Meu Perfil</button>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ backgroundColor: '#F5A623' }}
-              onClick={handleLogout}
-              title="Sair">
-              <span className="font-bold text-sm">IS</span>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header
+        navItems={[
+          { label: 'Oportunidades', path: '/opportunities' },
+          { label: 'Candidaturas', path: '/my-applications' },
+          { label: 'Meu Perfil', path: '/my-profile' },
+        ]}
+      />
 
       <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
 
@@ -143,10 +122,10 @@ export default function OpportunitiesPage() {
 
           <p className="text-xs font-semibold text-gray-400 mb-3 uppercase">Conta</p>
           <nav className="space-y-1">
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => navigate('/my-profile')}>
               Meu Perfil
             </button>
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
+            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => navigate('/settings')}>
               Configurações
             </button>
           </nav>
