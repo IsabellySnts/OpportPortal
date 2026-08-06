@@ -17,7 +17,7 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class OpportunityController : ControllerBase
+public class OpportunityController : BaseController
 {
     private readonly IMediator _mediator;
 
@@ -27,9 +27,24 @@ public class OpportunityController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Company")]
     public async Task<IActionResult> Create([FromBody] CreateOpportunityCommand request)
     {
-        var result = await _mediator.DispatchAsync<CreateOpportunityCommand, ResultViewModel<long>>(request);
+        var userId = GetUserId();
+
+        var command = new CreateOpportunityCommand(
+            userId,
+            request.Title,
+            request.Description,
+            request.Type,
+            request.Format,
+            request.Requirements,
+            request.FieldOfWork,
+            request.State,
+            request.Salary
+        );
+
+        var result = await _mediator.DispatchAsync<CreateOpportunityCommand, ResultViewModel<long>>(command);
 
         if (!result.IsSuccess)
             return BadRequest(result);
