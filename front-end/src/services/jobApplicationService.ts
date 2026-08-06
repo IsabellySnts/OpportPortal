@@ -14,5 +14,20 @@ export const jobApplicationService = {
       `/JobApplication/candidate/${candidateId}`
     );
     return response.data;
+  },
+
+  getByOpportunity: async (opportunityId: number) => {
+    const response = await api.get<ResultViewModel<JobApplication[]>>(
+      `/JobApplication/opportunity/${opportunityId}`
+    );
+    return response.data;
+  },
+
+  updateStatus: async (id: number, newStatus: number) => {
+    const response = await api.patch<ResultViewModel<number>>(
+      `/JobApplication/${id}/status`,
+      { id, newStatus }
+    );
+    return response.data;
   }
 };

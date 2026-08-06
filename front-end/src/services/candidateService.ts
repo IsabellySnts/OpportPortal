@@ -22,8 +22,31 @@ export interface CandidateResponse {
   fullName: string;
   birthDate: string;
   phoneNumber: string;
+  zipCode: string;
+  street: string;
+  number: string;
+  neighborhood: string;
   city: string;
   state: string;
+  country: string;
+  complement?: string;
+  urlLinkedin?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+export interface UpdateCandidateRequest {
+  id: number;
+  fullName: string;
+  birthDate: string;
+  zipCode: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  country: string;
+  complement?: string;
+  phoneNumber: string;
   urlLinkedin?: string;
 }
 
@@ -36,5 +59,10 @@ export const candidateService = {
   getMe: async () => {
     const response = await api.get<ResultViewModel<CandidateResponse>>('/Candidate/me');
     return response.data;
-  }
+  },
+
+  update: async (id: number, data: UpdateCandidateRequest) => {
+  const response = await api.put<ResultViewModel<number>>(`/Candidate/${id}`, data);
+  return response.data;
+}
 };
