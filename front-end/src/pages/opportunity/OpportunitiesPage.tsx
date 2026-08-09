@@ -6,6 +6,7 @@ import { jobApplicationService } from '../../services/jobApplicationService';
 import { Opportunity, OpportunityType, JobFormat } from '../../types';
 import Header from '../../components/layout/Header';
 import { candidateService } from '../../services/candidateService';
+import Sidebar from '../../components/layout/Sidebar';
 
 const typeLabels: Record<number, string> = {
   [OpportunityType.Internship]: 'Estágio',
@@ -119,36 +120,24 @@ export default function OpportunitiesPage() {
       <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
 
         {/* Sidebar */}
-        <aside className="w-56 flex-shrink-0">
-          <p className="text-xs font-semibold text-gray-400 mb-3 uppercase">Navegação</p>
-          <nav className="space-y-1 mb-8">
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100">
-              Início
-            </button>
-            <button className="w-full text-left px-4 py-2 rounded-lg font-medium flex justify-between items-center"
-              style={{ backgroundColor: '#EEF2F9', color: '#1B2A4A' }}>
-              Oportunidades
-              <span className="text-xs px-2 py-0.5 rounded-full text-white"
-                style={{ backgroundColor: '#F5A623' }}>
-                {opportunities.length}
-              </span>
-            </button>
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100"
-              onClick={() => navigate('/my-applications')}>
-              Candidaturas
-            </button>
-          </nav>
-
-          <p className="text-xs font-semibold text-gray-400 mb-3 uppercase">Conta</p>
-          <nav className="space-y-1">
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => navigate('/my-profile')}>
-              Meu Perfil
-            </button>
-            <button className="w-full text-left px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => navigate('/settings')}>
-              Configurações
-            </button>
-          </nav>
-        </aside>
+        <Sidebar
+          sections={[
+            {
+              title: 'Navegação',
+              items: [
+                { label: 'Oportunidades', path: '/opportunities', badge: opportunities.length },
+                { label: 'Candidaturas', path: '/my-applications', badge: appliedIds.length },
+              ],
+            },
+            {
+              title: 'Conta',
+              items: [
+                { label: 'Meu Perfil', path: '/my-profile' },
+                { label: 'Configurações', path: '/settings' },
+              ],
+            },
+          ]}
+        />
 
         {/* Conteúdo principal */}
         <main className="flex-1">
