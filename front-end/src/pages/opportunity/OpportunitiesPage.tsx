@@ -5,6 +5,7 @@ import { opportunityService } from '../../services/opportunityService';
 import { jobApplicationService } from '../../services/jobApplicationService';
 import { Opportunity, OpportunityType, JobFormat } from '../../types';
 import Header from '../../components/layout/Header';
+import { candidateService } from '../../services/candidateService';
 
 const typeLabels: Record<number, string> = {
   [OpportunityType.Internship]: 'Estágio',
@@ -43,7 +44,10 @@ export default function OpportunitiesPage() {
 
   useEffect(() => {
     loadOpportunities();
+    loadMyApplications();
   }, []);
+
+  const [appliedIds, setAppliedIds] = useState<number[]>([]);
 
   const loadOpportunities = async () => {
     setLoading(true);
@@ -57,12 +61,27 @@ export default function OpportunitiesPage() {
     }
   };
 
+  const loadMyApplications = async () => {
+    try {
+      const candidate = await candidateService.getMe();
+      if (candidate.isSuccess) {
+        const apps = await jobApplicationService.getByCandidate(candidate.data.id);
+        if (apps.isSuccess) {
+          setAppliedIds(apps.data.map(a => a.opportunityId));
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleApply = async (opportunityId: number) => {
     setApplying(opportunityId);
     try {
       const result = await jobApplicationService.create(opportunityId);
       if (result.isSuccess) {
         alert('Candidatura realizada com sucesso!');
+        setAppliedIds([...appliedIds, opportunityId]);
       } else {
         alert(result.message);
       }
@@ -208,14 +227,25 @@ export default function OpportunitiesPage() {
                         ? `R$ ${opp.salary.toLocaleString('pt-BR')}`
                         : 'A combinar'} · {formatLabels[opp.format]}
                     </span>
-                    <button
-                      onClick={() => handleApply(opp.id)}
-                      disabled={applying === opp.id}
-                      className="px-4 py-2 rounded-lg text-white text-sm font-medium disabled:opacity-50"
-                      style={{ backgroundColor: '#1B2A4A' }}
-                    >
-                      {applying === opp.id ? 'Enviando...' : 'Candidatar'}
-                    </button>
+                    {(() => {
+                      const alreadyApplied = appliedIds.includes(opp.id);
+                      return (
+                        <button
+                          onClick={() => handleApply(opp.id)}
+                          disabled={applying === opp.id || alreadyApplied}
+                          className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-60"
+                          style={alreadyApplied
+                            ? { backgroundColor: '#DCFCE7', color: '#16A34A', cursor: 'default' }
+                            : { backgroundColor: '#1B2A4A', color: 'white' }}
+                        >
+                          {applying === opp.id
+                            ? 'Enviando...'
+                            : alreadyApplied
+                              ? '✓ Candidatado'
+                              : 'Candidatar'}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
