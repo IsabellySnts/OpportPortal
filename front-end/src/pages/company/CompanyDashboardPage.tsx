@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { companyService } from '../../services/companyService';
 import { opportunityService } from '../../services/opportunityService';
 import { Opportunity, OpportunityType } from '../../types';
+import Header from '../../components/layout/Header';
 
 const typeLabels: Record<number, string> = {
   [OpportunityType.Internship]: 'Estágio',
@@ -63,29 +64,12 @@ export default function CompanyDashboardPage() {
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <header className="text-white" style={{ backgroundColor: '#1B2A4A' }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: '#F5A623' }}>
-              <span className="font-bold">P</span>
-            </div>
-            <span className="font-bold text-lg">Portal de Oportunidades</span>
-          </div>
-
-          <nav className="flex items-center gap-8">
-            <button className="font-semibold" style={{ color: '#F5A623' }}>
-              Minhas Vagas
-            </button>
-            <button className="hover:opacity-80">Meu Perfil</button>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
-              style={{ backgroundColor: '#F5A623' }}
-              onClick={handleLogout} title="Sair">
-              <span className="font-bold text-sm">EM</span>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header
+        navItems={[
+          { label: 'Minhas vagas', path: '/company/dashboard' },
+          { label: 'Meu Perfil', path: '/my-profile' },
+        ]}
+      />
 
       {/* Conteúdo */}
       <main className="max-w-5xl mx-auto px-6 py-8">
@@ -128,10 +112,10 @@ export default function CompanyDashboardPage() {
                         {opp.title}
                       </h3>
                       <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                        style={opp.status === 'Active'
+                        style={opp.status === 1
                           ? { backgroundColor: '#DCFCE7', color: '#16A34A' }
                           : { backgroundColor: '#F3F4F6', color: '#6B7280' }}>
-                        {opp.status === 'Active' ? 'Ativa' : 'Encerrada'}
+                        {opp.status === 1 ? 'Ativa' : 'Encerrada'}
                       </span>
                     </div>
                     <p className="text-sm text-gray-500">
@@ -150,7 +134,7 @@ export default function CompanyDashboardPage() {
                     style={{ backgroundColor: '#1B2A4A' }}>
                     Ver candidatos
                   </button>
-                  {opp.status === 'Active' && (
+                  {opp.status === 1 && (
                     <button
                       onClick={() => handleClose(opp.id)}
                       className="text-sm px-4 py-2 rounded-lg font-medium border"

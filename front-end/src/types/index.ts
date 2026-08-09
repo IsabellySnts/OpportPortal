@@ -9,8 +9,8 @@ export interface ResultViewModel<T> {
 }
 
 export enum UserType {
-  Candidate = 1,
-  Company = 2
+  Candidate = 2,
+  Company = 3
 }
 
 export enum OpportunityType {
@@ -49,7 +49,7 @@ export interface Opportunity {
   fieldOfWork: string;
   state: string;
   salary: number;
-  status: string;
+  status: number;
   createdAt: string;
 }
 

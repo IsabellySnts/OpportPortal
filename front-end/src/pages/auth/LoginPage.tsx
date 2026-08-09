@@ -100,7 +100,7 @@ export default function LoginPage() {
           </div>
 
           <h2 className="text-2xl font-bold mb-1" style={{ color: '#1B2A4A' }}>
-            Bem-vinda de volta!
+            Bem-vindo de volta!
           </h2>
           <p className="text-gray-500 mb-8">Acesse sua conta para continuar</p>
 
