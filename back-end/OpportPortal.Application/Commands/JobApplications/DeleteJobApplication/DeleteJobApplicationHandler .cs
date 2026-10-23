@@ -20,10 +20,11 @@ public class DeleteJobApplicationHandler : IHandler<DeleteJobApplicationCommand,
             return ResultViewModel<long>.Error("Job application not found.");
 
         if (!jobApplication.IsActive())
-            return ResultViewModel<long>.Error("Cannot delete a finalized application.");
+            return ResultViewModel<long>.Error("Cannot cancel a finalized application.");
 
-        await _jobApplicationRepository.Delete(jobApplication);
+        jobApplication.Withdraw();                        
+        await _jobApplicationRepository.Update(jobApplication);
 
-        return ResultViewModel<long>.Success(jobApplication.Id, "Application deleted successfully.");
+        return ResultViewModel<long>.Success(jobApplication.Id, "Application cancelled successfully.");
     }
 }

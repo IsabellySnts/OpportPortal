@@ -9,12 +9,15 @@ using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Experiences;
 using OpportPortal.Application.Queries.Experiences.GetExperienceById;
 using OpportPortal.Application.Queries.Experiences.GetExperiencesByCurriculumId;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OpportPortal.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+[SwaggerTag("Gerenciamento de experiências profissionais — histórico de cargos do currículo do candidato")]
+
 public class ExperienceController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -25,6 +28,14 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Adiciona uma experiência ao currículo",
+        Description = "Cadastra uma experiência profissional (cargo, empresa, período e descrição) vinculada a um currículo.")]
+    [SwaggerResponse(201, "Experiência criada com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos ou currículo não encontrado")]
+    [SwaggerResponse(403, "Usuário sem permissão (não é um candidato)")]
+
     public async Task<IActionResult> Create([FromBody] CreateExperienceRequest request)
     {
         var result = await _mediator.DispatchAsync<CreateExperienceCommand, ResultViewModel<long>>(request.CreateExperienceRequestToCommand());
@@ -36,6 +47,12 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpGet("{id:long}")]
+    [Authorize(Roles = "Candidate,Company,Adm")]
+    [SwaggerOperation(
+        Summary = "Busca uma experiência por ID",
+        Description = "Retorna os dados de uma experiência profissional específica.")]
+    [SwaggerResponse(200, "Experiência encontrada", typeof(ResultViewModel<ExperienceResponse>))]
+    [SwaggerResponse(404, "Experiência não encontrada")]
     public async Task<IActionResult> GetById(long id)
     {
         var result = await _mediator.DispatchAsync<GetExperienceByIdQuery, ResultViewModel<ExperienceResponse>>(
@@ -48,6 +65,10 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpGet("curriculum/{curriculumId:long}")]
+    [SwaggerOperation(
+        Summary = "Lista as experiências de um currículo",
+        Description = "Retorna todas as experiências profissionais vinculadas a um currículo. Usado pela empresa ao avaliar um inscrito.")]
+    [SwaggerResponse(200, "Experiências retornadas com sucesso", typeof(ResultViewModel<IEnumerable<ExperienceResponse>>))]
     public async Task<IActionResult> GetByCurriculumId(long curriculumId)
     {
         var result = await _mediator.DispatchAsync<GetExperiencesByCurriculumIdQuery, ResultViewModel<IEnumerable<ExperienceResponse>>>(
@@ -57,6 +78,13 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Atualiza uma experiência",
+        Description = "Atualiza os dados de uma experiência profissional do currículo.")]
+    [SwaggerResponse(200, "Experiência atualizada com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos ou Id divergente")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateExperienceCommand request)
     {
         if (id != request.Id)
@@ -71,6 +99,13 @@ public class ExperienceController : ControllerBase
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Exclui uma experiência",
+        Description = "Realiza a exclusão lógica (soft delete) de uma experiência profissional do currículo.")]
+    [SwaggerResponse(200, "Experiência excluída com sucesso")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
+    [SwaggerResponse(404, "Experiência não encontrada")]
     public async Task<IActionResult> Delete(long id)
     {
         var result = await _mediator.DispatchAsync<DeleteExperienceCommand, ResultViewModel<long>>(

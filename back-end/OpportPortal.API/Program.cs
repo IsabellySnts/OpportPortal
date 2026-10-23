@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using OpportPortal.Application;
 using OpportPortal.Infrastructure;
 
@@ -21,7 +21,21 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "OpportPortal API", Version = "v1" });
+    options.CustomSchemaIds(type => type.FullName);
+
+    options.EnableAnnotations();
+
+    options.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "OpportPortal API", 
+        Version = "v1",
+        Description = "API do Portal de Oportunidades Acadêmicas — plataforma que conecta estudantes a oportunidades de estágio, freelance, projetos e vagas CLT/PJ",
+        Contact = new OpenApiContact
+        {
+            Name = "Isabelly dos Santos",
+            Email = "isabellydossantos112@gmail.com"
+        }
+    });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -33,19 +47,10 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Digite seu token JWT"
     });
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(document =>
+    new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });
 
@@ -54,11 +59,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty;
-    });
+    app.UseSwaggerUI();
 }
 
 //app.UseHttpsRedirection();

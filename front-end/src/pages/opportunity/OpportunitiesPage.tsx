@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { opportunityService } from '../../services/opportunityService';
 import { jobApplicationService } from '../../services/jobApplicationService';
-import { Opportunity, OpportunityType, JobFormat } from '../../types';
+import { Opportunity, OpportunityType, JobFormat, JobApplicationStatus} from '../../types';
 import Header from '../../components/layout/Header';
 import { candidateService } from '../../services/candidateService';
 import Sidebar from '../../components/layout/Sidebar';
+import { notifySuccess, notifyError } from '../../components/ui/Alerts';
 
 const typeLabels: Record<number, string> = {
   [OpportunityType.Internship]: 'Estágio',
@@ -62,36 +63,40 @@ export default function OpportunitiesPage() {
     }
   };
 
-  const loadMyApplications = async () => {
-    try {
-      const candidate = await candidateService.getMe();
-      if (candidate.isSuccess) {
-        const apps = await jobApplicationService.getByCandidate(candidate.data.id);
-        if (apps.isSuccess) {
-          setAppliedIds(apps.data.map(a => a.opportunityId));
-        }
+const loadMyApplications = async () => {
+  try {
+    const candidate = await candidateService.getMe();
+    if (candidate.isSuccess) {
+      const apps = await jobApplicationService.getByCandidate(candidate.data.id);
+      if (apps.isSuccess) {
+        setAppliedIds(
+          apps.data
+            .filter(a => a.status !== JobApplicationStatus.Withdrawn) // ignora canceladas
+            .map(a => a.opportunityId)
+        );
       }
-    } catch (err) {
-      console.error(err);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  const handleApply = async (opportunityId: number) => {
-    setApplying(opportunityId);
-    try {
-      const result = await jobApplicationService.create(opportunityId);
-      if (result.isSuccess) {
-        alert('Candidatura realizada com sucesso!');
-        setAppliedIds([...appliedIds, opportunityId]);
-      } else {
-        alert(result.message);
-      }
-    } catch {
-      alert('Erro ao candidatar. Tente novamente.');
-    } finally {
-      setApplying(null);
+const handleApply = async (opportunityId: number) => {
+  setApplying(opportunityId);
+  try {
+    const result = await jobApplicationService.create(opportunityId);
+    if (result.isSuccess) {
+      notifySuccess('Candidatura realizada com sucesso!');
+      setAppliedIds([...appliedIds, opportunityId]);
+    } else {
+      notifyError(result.message ?? 'Não foi possível realizar a candidatura.');
     }
-  };
+  } catch {
+    notifyError('Erro ao candidatar. Tente novamente.');
+  } finally {
+    setApplying(null);
+  }
+};
 
   const handleLogout = () => {
     logout();
@@ -112,8 +117,7 @@ export default function OpportunitiesPage() {
       <Header
         navItems={[
           { label: 'Oportunidades', path: '/opportunities' },
-          { label: 'Candidaturas', path: '/my-applications' },
-          { label: 'Meu Perfil', path: '/my-profile' },
+          { label: 'Candidaturas', path: '/my-applications' }
         ]}
       />
 

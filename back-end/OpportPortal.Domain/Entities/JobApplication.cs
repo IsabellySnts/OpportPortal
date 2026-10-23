@@ -13,9 +13,9 @@ public class JobApplication : BaseEntity
     private static readonly Dictionary<JobApplicationStatus, IEnumerable<JobApplicationStatus>> _validTransitions = new()
     {
         [JobApplicationStatus.Registered] = [JobApplicationStatus.UnderReview, JobApplicationStatus.NotAdvanced, JobApplicationStatus.Withdrawn, JobApplicationStatus.PositionClosed],
-        [JobApplicationStatus.UnderReview] = [JobApplicationStatus.InterviewScheduled, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
-        [JobApplicationStatus.InterviewScheduled] = [JobApplicationStatus.FinalProcess, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
-        [JobApplicationStatus.FinalProcess] = [JobApplicationStatus.Approved, JobApplicationStatus.NotAdvanced, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.UnderReview] = [JobApplicationStatus.InterviewScheduled, JobApplicationStatus.NotAdvanced, JobApplicationStatus.Withdrawn, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.InterviewScheduled] = [JobApplicationStatus.FinalProcess, JobApplicationStatus.NotAdvanced, JobApplicationStatus.Withdrawn, JobApplicationStatus.PositionClosed],
+        [JobApplicationStatus.FinalProcess] = [JobApplicationStatus.Approved, JobApplicationStatus.NotAdvanced, JobApplicationStatus.Withdrawn, JobApplicationStatus.PositionClosed],
         [JobApplicationStatus.Approved] = [],
         [JobApplicationStatus.NotAdvanced] = [],
         [JobApplicationStatus.Withdrawn] = [],
@@ -60,6 +60,15 @@ public class JobApplication : BaseEntity
             throw new InvalidOperationException($"Invalid transition: {Status} → {newStatus}.");
 
         Status = newStatus;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Reapply()
+    {
+        if (Status != JobApplicationStatus.Withdrawn)
+            throw new InvalidOperationException("Only withdrawn applications can be reapplied.");
+
+        Status = JobApplicationStatus.Registered;
         UpdatedAt = DateTime.UtcNow;
     }
 

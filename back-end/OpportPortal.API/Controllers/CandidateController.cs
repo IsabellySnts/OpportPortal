@@ -10,6 +10,7 @@ using OpportPortal.Application.Queries.Candidates;
 using OpportPortal.Application.Queries.Candidates.GetAllCandidates;
 using OpportPortal.Application.Queries.Candidates.GetCandidateById;
 using OpportPortal.Application.Queries.Candidates.GetCandidateByUserId;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OpportPortal.API.Controllers;
 
@@ -17,6 +18,8 @@ namespace OpportPortal.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+[SwaggerTag("Gerenciamento de candidatos — cadastro, consulta e manutenção do perfil do estudante")]
+
 public class CandidateController : BaseController
 {
     private readonly IMediator _mediator;
@@ -27,6 +30,14 @@ public class CandidateController : BaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Cadastra um novo candidato",
+        Description = "Cria o perfil do candidato vinculado ao usuário autenticado. Exige token de um usuário do tipo Candidato.")]
+    [SwaggerResponse(201, "Candidato criado com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos ou candidato já cadastrado para este usuário")]
+    [SwaggerResponse(401, "Usuário não autenticado")]
+    [SwaggerResponse(403, "Usuário sem permissão (não é um candidato)")]
     public async Task<IActionResult> Create([FromBody] CreateCandidateRequest request)
     {
         var userId = GetUserId(); 
@@ -40,6 +51,13 @@ public class CandidateController : BaseController
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Atualiza os dados do candidato",
+        Description = "Atualiza o perfil do candidato (nome, data de nascimento, telefone, endereço e LinkedIn).")]
+    [SwaggerResponse(200, "Candidato atualizado com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateCandidateRequest request)
     {
         var result = await _mediator.DispatchAsync<UpdateCandidateCommand, ResultViewModel<long>>(request.UpdateCandidateRequestToCommand(id));
@@ -51,6 +69,13 @@ public class CandidateController : BaseController
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Exclui o candidato",
+        Description = "Realiza a exclusão lógica (soft delete) do cadastro do candidato.")]
+    [SwaggerResponse(200, "Candidato excluído com sucesso")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
+    [SwaggerResponse(404, "Candidato não encontrado")]
     public async Task<IActionResult> Delete(long id)
     {
         var result = await _mediator.DispatchAsync<DeleteCandidateCommand, ResultViewModel<long>>(
@@ -63,6 +88,12 @@ public class CandidateController : BaseController
     }
 
     [HttpGet("{id:long}")]
+    [Authorize(Roles = "Company, Adm")]
+    [SwaggerOperation(
+        Summary = "Busca um candidato por ID",
+        Description = "Retorna os dados cadastrais de um candidato específico.")]
+    [SwaggerResponse(200, "Candidato encontrado", typeof(ResultViewModel<CandidateResponse>))]
+    [SwaggerResponse(404, "Candidato não encontrado")]
     public async Task<IActionResult> GetById(long id)
     {
         var result = await _mediator.DispatchAsync<GetCandidateByIdQuery, ResultViewModel<CandidateResponse>>(
@@ -75,6 +106,11 @@ public class CandidateController : BaseController
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admn")]
+    [SwaggerOperation(
+        Summary = "Lista todos os candidatos",
+        Description = "Retorna a lista de candidatos cadastrados na plataforma.")]
+    [SwaggerResponse(200, "Lista retornada com sucesso", typeof(ResultViewModel<IEnumerable<CandidateResponse>>))]
     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.DispatchAsync<GetAllCandidatesQuery, ResultViewModel<IEnumerable<CandidateResponse>>>(
@@ -84,6 +120,12 @@ public class CandidateController : BaseController
     }
 
     [HttpGet("me")]
+    [Authorize(Roles = "Candidate")]
+    [SwaggerOperation(
+        Summary = "Retorna o candidato do usuário autenticado",
+        Description = "Busca o perfil do candidato vinculado ao token de acesso atual.")]
+    [SwaggerResponse(200, "Candidato encontrado", typeof(ResultViewModel<CandidateResponse>))]
+    [SwaggerResponse(404, "Nenhum candidato vinculado ao usuário")]
     public async Task<IActionResult> GetMe()
     {
         var userId = GetUserId();

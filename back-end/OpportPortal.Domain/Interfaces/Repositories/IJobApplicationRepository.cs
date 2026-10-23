@@ -12,4 +12,5 @@ public interface IJobApplicationRepository
     Task<bool> ExistsAsync(long candidateId, long opportunityId);
     Task Update(JobApplication jobApplication);
     Task Delete(JobApplication jobApplication);
+    Task<JobApplication?> GetByCandidateAndOpportunityAsync(long candidateId, long opportunityId);
 }

@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using OpportPortal.Application.Commands.Users.CreateUser;
 using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
+using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace OpportPortal.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[SwaggerTag("Autenticação e cadastro de usuários — registro e login com emissão de token JWT")]
+
 public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,6 +23,9 @@ public class UserController : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
+    [SwaggerOperation(
+            Summary = "Criar usuário",
+            Description = "Cadastra um novo usuário no sistema com e-mail, senha e perfil (1 = Adm, 2 = Candidate, 3 = Company).")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand request)
     {
         var result = await _mediator.DispatchAsync<CreateUserCommand, ResultViewModel<long>>(request);
@@ -31,6 +38,9 @@ public class UserController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [SwaggerOperation(
+            Summary = "Autenticar usuário (login)",
+            Description = "Realiza a autenticação com e-mail e senha. Retorna o token JWT para uso nos endpoints protegidos. Não requer autenticação prévia.")]
     public async Task<IActionResult> Login([FromBody] LoginCommand request)
     {
         var result = await _mediator.DispatchAsync<LoginCommand, ResultViewModel<LoginResponse>>(request);

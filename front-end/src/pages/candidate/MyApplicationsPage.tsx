@@ -6,6 +6,7 @@ import { JobApplication, JobApplicationStatus, Opportunity } from '../../types';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import { opportunityService } from '../../services/opportunityService';
+import { confirmAction, notifySuccess, notifyError } from '../../components/ui/Alerts';
 
 
 const statusConfig: Record<number, { label: string; bg: string; color: string }> = {
@@ -29,7 +30,7 @@ export default function MyApplicationsPage() {
 
   useEffect(() => {
     loadApplications();
-    loadOpportunities();  
+    loadOpportunities();
   }, []);
 
   const loadApplications = async () => {
@@ -64,14 +65,49 @@ export default function MyApplicationsPage() {
     }
   };
 
+  const cancelableStatuses = [
+    JobApplicationStatus.Registered,
+    JobApplicationStatus.UnderReview,
+    JobApplicationStatus.InterviewScheduled,
+    JobApplicationStatus.FinalProcess,
+  ];
+
+  const handleCancel = async (id: number) => {
+    const confirmed = await confirmAction({
+      title: 'Cancelar Candidatura',
+      text: 'Tem certeza que deseja cancelar esta candidatura?',
+      confirmText: 'Cancelar',
+      cancelText: 'Voltar',
+      danger: true
+    });
+    if (!confirmed) return;
+
+    const result = await jobApplicationService.cancel(id);
+    if (result.isSuccess) {
+      await loadApplications();
+      notifySuccess('Candidatura cancelada com sucesso.');
+    } else {
+      notifyError(result.message ?? 'Não foi possível cancelar a candidatura.');
+    }
+  };
+
+  const handleReapply = async (opportunityId: number) => {
+    const result = await jobApplicationService.create(opportunityId);
+    if (result.isSuccess) {
+      await loadApplications();
+      notifySuccess('Candidatura reenviada com sucesso!');
+    } else {
+      notifyError(result.message ?? 'Não foi possível reenviar a candidatura.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
 
       <Header
         navItems={[
           { label: 'Oportunidades', path: '/opportunities' },
-          { label: 'Candidaturas', path: '/my-applications' },
-          { label: 'Meu Perfil', path: '/my-profile' },
+          { label: 'Candidaturas', path: '/my-applications' }
         ]}
       />
 
@@ -82,7 +118,6 @@ export default function MyApplicationsPage() {
             {
               title: 'Navegação',
               items: [
-                { label: 'Início', path: '/opportunities' },
                 { label: 'Oportunidades', path: '/opportunities', badge: opportunities.length },
                 { label: 'Candidaturas', path: '/my-applications', badge: applications.length },
               ],
@@ -132,10 +167,33 @@ export default function MyApplicationsPage() {
                         Candidatura em {new Date(app.createdAt).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
-                    <span className="text-sm px-4 py-1.5 rounded-full font-medium"
-                      style={{ backgroundColor: config.bg, color: config.color }}>
-                      {config.label}
-                    </span>
+
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm px-4 py-1.5 rounded-full font-medium"
+                        style={{ backgroundColor: config.bg, color: config.color }}>
+                        {config.label}
+                      </span>
+
+                      {cancelableStatuses.includes(app.status) && (
+                        <button
+                          onClick={() => handleCancel(app.id)}
+                          className="text-sm px-3 py-1.5 rounded-lg font-medium border transition hover:bg-red-50"
+                          style={{ color: '#DC2626', borderColor: '#FECACA' }}
+                        >
+                          Cancelar
+                        </button>
+                      )}
+
+                      {app.status === JobApplicationStatus.Withdrawn && (
+                        <button
+                          onClick={() => handleReapply(app.opportunityId)}
+                          className="text-sm px-3 py-1.5 rounded-lg font-medium text-white transition hover:opacity-90"
+                          style={{ backgroundColor: '#1B2A4A' }}
+                        >
+                          Candidatar novamente
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}

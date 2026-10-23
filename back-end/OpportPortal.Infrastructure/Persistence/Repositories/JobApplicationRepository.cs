@@ -56,4 +56,11 @@ public class JobApplicationRepository : IJobApplicationRepository
         _context.JobApplications.Update(jobApplication);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<JobApplication?> GetByCandidateAndOpportunityAsync(long candidateId, long opportunityId)
+    {
+        return await _context.JobApplications
+            .FirstOrDefaultAsync(ja => ja.CandidateId == candidateId
+                                    && ja.OpportunityId == opportunityId);
+    }
 }

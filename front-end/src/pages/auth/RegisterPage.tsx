@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { UserType } from '../../types';
+import logo from '../../assets/graduate.png';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -51,8 +52,8 @@ export default function RegisterPage() {
         style={{ backgroundColor: '#1B2A4A' }}>
         <div className="text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: '#F5A623' }}>
-            <span className="text-white font-bold text-2xl">P</span>
+            style={{ backgroundColor: '#FFFFFF' }}>
+            <img src={logo} alt="Logo" className="w-6 h-6 object-contain" />
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">
             OpportPortal
@@ -69,8 +70,8 @@ export default function RegisterPage() {
 
           <div className="lg:hidden text-center mb-8">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
-              style={{ backgroundColor: '#1B2A4A' }}>
-              <span className="text-white font-bold text-xl">P</span>
+              style={{ backgroundColor: '#FFFFFF' }}>
+              <img src={logo} alt="Logo" className="w-6 h-6 object-contain" />
             </div>
           </div>
 

@@ -2,7 +2,7 @@
 
 public sealed class Cnpj
 {
-    public string Value { get;}
+    public string Value { get; }
 
     public Cnpj(string value)
     {
@@ -32,5 +32,4 @@ public sealed class Cnpj
 
         return true;
     }
-
 }

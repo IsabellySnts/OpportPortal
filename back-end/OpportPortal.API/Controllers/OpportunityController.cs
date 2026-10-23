@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OpportPortal.API.Requests;
 using OpportPortal.Application.Commands.Opportunities.CloseOpportunity;
 using OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
 using OpportPortal.Application.Commands.Opportunities.DeleteOpportunity;
@@ -11,12 +12,15 @@ using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByCompanyId
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
 using OpportPortal.Domain.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OpportPortal.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
+[SwaggerTag("Gerenciamento de oportunidades — publicação, consulta, filtros e encerramento de vagas")]
+
 public class OpportunityController : BaseController
 {
     private readonly IMediator _mediator;
@@ -28,7 +32,13 @@ public class OpportunityController : BaseController
 
     [HttpPost]
     [Authorize(Roles = "Company")]
-    public async Task<IActionResult> Create([FromBody] CreateOpportunityCommand request)
+    [SwaggerOperation(
+        Summary = "Publica uma nova oportunidade",
+        Description = "Cria uma vaga vinculada à empresa autenticada. Ação exclusiva de empresas, garantindo a confiabilidade das oportunidades.")]
+    [SwaggerResponse(201, "Oportunidade publicada com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos ou empresa não encontrada")]
+    [SwaggerResponse(403, "Usuário sem permissão (não é uma empresa)")]
+    public async Task<IActionResult> Create([FromBody] CreateOpportunityRequest request)
     {
         var userId = GetUserId();
 
@@ -53,6 +63,11 @@ public class OpportunityController : BaseController
     }
 
     [HttpGet("{id:long}")]
+    [SwaggerOperation(
+        Summary = "Busca uma oportunidade por ID",
+        Description = "Retorna os detalhes de uma vaga específica.")]
+    [SwaggerResponse(200, "Oportunidade encontrada", typeof(ResultViewModel<OpportunityResponse>))]
+    [SwaggerResponse(404, "Oportunidade não encontrada")]
     public async Task<IActionResult> GetById(long id)
     {
         var result = await _mediator.DispatchAsync<GetOpportunityByIdQuery, ResultViewModel<OpportunityResponse>>(
@@ -65,6 +80,10 @@ public class OpportunityController : BaseController
     }
 
     [HttpGet]
+    [SwaggerOperation(
+        Summary = "Lista todas as oportunidades ativas",
+        Description = "Retorna as vagas ativas disponíveis para os candidatos.")]
+    [SwaggerResponse(200, "Oportunidades retornadas com sucesso", typeof(ResultViewModel<IEnumerable<OpportunityResponse>>))]
     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.DispatchAsync<GetAllOpportunitiesQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>(
@@ -74,7 +93,9 @@ public class OpportunityController : BaseController
     }
 
     [HttpGet("filter")]
-    [AllowAnonymous]
+    [SwaggerOperation(
+        Summary = "Filtra oportunidades",
+        Description = "Busca vagas ativas por área, estado, tipo e formato. Endpoint público — permite consulta sem autenticação.")]
     public async Task<IActionResult> GetByFilter(
         [FromQuery] string? fieldOfWork,
         [FromQuery] string? state,
@@ -88,6 +109,13 @@ public class OpportunityController : BaseController
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Company")]
+    [SwaggerOperation(
+        Summary = "Atualiza uma oportunidade",
+        Description = "Atualiza os dados de uma vaga publicada. Ação exclusiva da empresa.")]
+    [SwaggerResponse(200, "Oportunidade atualizada com sucesso")]
+    [SwaggerResponse(400, "Dados inválidos, vaga encerrada ou Id divergente")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateOpportunityCommand request)
     {
         if (id != request.Id)
@@ -102,6 +130,13 @@ public class OpportunityController : BaseController
     }
 
     [HttpPatch("{id:long}/close")]
+    [Authorize(Roles = "Company")]
+    [SwaggerOperation(
+        Summary = "Encerra uma oportunidade",
+        Description = "Marca a vaga como encerrada, retirando-a da listagem de vagas ativas. Ação exclusiva da empresa.")]
+    [SwaggerResponse(200, "Oportunidade encerrada com sucesso")]
+    [SwaggerResponse(400, "Vaga já encerrada")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
     public async Task<IActionResult> Close(long id)
     {
         var result = await _mediator.DispatchAsync<CloseOpportunityCommand, ResultViewModel<long>>(
@@ -114,6 +149,13 @@ public class OpportunityController : BaseController
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Roles = "Company")]
+    [SwaggerOperation(
+        Summary = "Exclui uma oportunidade",
+        Description = "Realiza a exclusão lógica (soft delete) de uma vaga. Ação exclusiva da empresa.")]
+    [SwaggerResponse(200, "Oportunidade excluída com sucesso")]
+    [SwaggerResponse(403, "Usuário sem permissão")]
+    [SwaggerResponse(404, "Oportunidade não encontrada")]
     public async Task<IActionResult> Delete(long id)
     {
         var result = await _mediator.DispatchAsync<DeleteOpportunityCommand, ResultViewModel<long>>(
@@ -126,6 +168,11 @@ public class OpportunityController : BaseController
     }
 
     [HttpGet("company/{companyId:long}")]
+    [SwaggerOperation(
+        Summary = "Lista as vagas de uma empresa",
+        Description = "Retorna todas as oportunidades publicadas por uma empresa. Usado no painel da empresa.")]
+    [SwaggerResponse(200, "Oportunidades retornadas com sucesso", typeof(ResultViewModel<IEnumerable<OpportunityResponse>>))]
+    [SwaggerResponse(403, "Usuário sem permissão")]
     public async Task<IActionResult> GetByCompany(long companyId)
     {
         var result = await _mediator.DispatchAsync<GetOpportunitiesByCompanyIdQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>(
