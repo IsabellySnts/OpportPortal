@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using OpportPortal.Application;
 using OpportPortal.Infrastructure;
+using OpportPortal.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,9 +27,9 @@ builder.Services.AddSwaggerGen(options =>
 
     options.EnableAnnotations();
 
-    options.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "OpportPortal API", 
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "OpportPortal API",
         Version = "v1",
         Description = "API do Portal de Oportunidades Acadêmicas — plataforma que conecta estudantes a oportunidades de estágio, freelance, projetos e vagas CLT/PJ",
         Contact = new OpenApiContact
@@ -56,11 +58,15 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<OpportPortalDbContext>();
+    db.Database.Migrate();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 //app.UseHttpsRedirection();
 app.UseCors("Development");
