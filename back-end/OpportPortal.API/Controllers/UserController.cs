@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpportPortal.Application.Commands.Users.CreateUser;
+using OpportPortal.Application.Commands.Users.GoogleAuth;
 using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
 using Swashbuckle.AspNetCore.Annotations;
@@ -44,6 +45,23 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginCommand request)
     {
         var result = await _mediator.DispatchAsync<LoginCommand, ResultViewModel<LoginResponse>>(request);
+
+        if (!result.IsSuccess)
+            return Unauthorized(result);
+
+        return Ok(result);
+    }
+
+    [HttpPost("google-auth")]
+    [AllowAnonymous]
+    [SwaggerOperation(
+    Summary = "Login/cadastro com Google",
+    Description = "Valida o ID token do Google. Se a conta existe, loga; se não existe e o userType for enviado (cadastro), cria a conta. Retorna o JWT.")]
+    [SwaggerResponse(200, "Autenticado com sucesso", typeof(ResultViewModel<LoginResponse>))]
+    [SwaggerResponse(401, "Token inválido ou conta não encontrada")]
+    public async Task<IActionResult> GoogleAuth([FromBody] GoogleAuthCommand request)
+    {
+        var result = await _mediator.DispatchAsync<GoogleAuthCommand, ResultViewModel<GoogleAuthResponse>>(request);
 
         if (!result.IsSuccess)
             return Unauthorized(result);
