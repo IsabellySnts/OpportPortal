@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { candidateService } from '../../services/candidateService';
 import { curriculumService } from '../../services/curriculumService';
+import AddressFields, { Address, emptyAddress } from '../../components/ui/AddressFields';
+import PhoneInput from '../../components/ui/PhoneInput';
 
 const educationLevels = [
   { value: 0, label: 'Ensino Médio' },
@@ -18,21 +20,16 @@ export default function CandidateSetupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Etapa 1 — Dados pessoais
+  // Etapa 1 — Dados pessoais (sem endereço)
   const [personal, setPersonal] = useState({
     fullName: '',
     birthDate: '',
-    phoneNumber: '',
+    phoneNumber: '', // só dígitos
     urlLinkedin: '',
-    zipCode: '',
-    street: '',
-    number: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    country: 'Brasil',
-    complement: '',
   });
+
+  // Endereço reutilizável
+  const [address, setAddress] = useState<Address>(emptyAddress);
 
   // Etapa 2 — Currículo
   const [educationLevel, setEducationLevel] = useState(2);
@@ -41,9 +38,8 @@ export default function CandidateSetupPage() {
   const [hardInput, setHardInput] = useState('');
   const [softInput, setSoftInput] = useState('');
 
-  const handlePersonalChange = (field: string, value: string) => {
-    setPersonal(prev => ({ ...prev, [field]: value }));
-  };
+  const handlePersonalChange = (field: string, value: string) =>
+    setPersonal((prev) => ({ ...prev, [field]: value }));
 
   const addHardSkill = () => {
     if (hardInput.trim()) {
@@ -79,8 +75,10 @@ export default function CandidateSetupPage() {
       // 1. Cria o candidato
       const candidateResult = await candidateService.create({
         ...personal,
+        ...address,
         birthDate: new Date(personal.birthDate).toISOString(),
-        complement: personal.complement || undefined,
+        country: 'Brasil',
+        complement: address.complement || undefined,
         urlLinkedin: personal.urlLinkedin || undefined,
       });
 
@@ -109,8 +107,8 @@ export default function CandidateSetupPage() {
     }
   };
 
-  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 bg-white";
-  const labelClass = "block text-sm font-medium mb-1";
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 bg-white';
+  const labelClass = 'block text-sm font-medium mb-1';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -120,17 +118,13 @@ export default function CandidateSetupPage() {
         <div className="flex items-center justify-center gap-4 mb-8">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold"
-              style={{ backgroundColor: step >= 1 ? '#1B2A4A' : '#D1D5DB' }}>
-              1
-            </div>
+              style={{ backgroundColor: step >= 1 ? '#1B2A4A' : '#D1D5DB' }}>1</div>
             <span style={{ color: step >= 1 ? '#1B2A4A' : '#9CA3AF' }}>Dados pessoais</span>
           </div>
           <div className="w-12 h-0.5 bg-gray-300" />
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold"
-              style={{ backgroundColor: step >= 2 ? '#1B2A4A' : '#D1D5DB' }}>
-              2
-            </div>
+              style={{ backgroundColor: step >= 2 ? '#1B2A4A' : '#D1D5DB' }}>2</div>
             <span style={{ color: step >= 2 ? '#1B2A4A' : '#9CA3AF' }}>Currículo</span>
           </div>
         </div>
@@ -159,9 +153,8 @@ export default function CandidateSetupPage() {
                 </div>
                 <div>
                   <label className={labelClass} style={{ color: '#1B2A4A' }}>Telefone</label>
-                  <input className={inputClass} required placeholder="11999999999"
-                    value={personal.phoneNumber}
-                    onChange={(e) => handlePersonalChange('phoneNumber', e.target.value)} />
+                  <PhoneInput value={personal.phoneNumber}
+                    onChange={(v) => handlePersonalChange('phoneNumber', v)} required />
                 </div>
               </div>
 
@@ -172,57 +165,8 @@ export default function CandidateSetupPage() {
                   onChange={(e) => handlePersonalChange('urlLinkedin', e.target.value)} />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>CEP</label>
-                  <input className={inputClass} required placeholder="00000000"
-                    value={personal.zipCode}
-                    onChange={(e) => handlePersonalChange('zipCode', e.target.value)} />
-                </div>
-                <div className="col-span-2">
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>Rua</label>
-                  <input className={inputClass} required
-                    value={personal.street}
-                    onChange={(e) => handlePersonalChange('street', e.target.value)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>Número</label>
-                  <input className={inputClass} required
-                    value={personal.number}
-                    onChange={(e) => handlePersonalChange('number', e.target.value)} />
-                </div>
-                <div className="col-span-2">
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>Bairro</label>
-                  <input className={inputClass} required
-                    value={personal.neighborhood}
-                    onChange={(e) => handlePersonalChange('neighborhood', e.target.value)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2">
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>Cidade</label>
-                  <input className={inputClass} required
-                    value={personal.city}
-                    onChange={(e) => handlePersonalChange('city', e.target.value)} />
-                </div>
-                <div>
-                  <label className={labelClass} style={{ color: '#1B2A4A' }}>UF</label>
-                  <input className={inputClass} required maxLength={2} placeholder="SP"
-                    value={personal.state}
-                    onChange={(e) => handlePersonalChange('state', e.target.value.toUpperCase())} />
-                </div>
-              </div>
-
-              <div>
-                <label className={labelClass} style={{ color: '#1B2A4A' }}>Complemento (opcional)</label>
-                <input className={inputClass}
-                  value={personal.complement}
-                  onChange={(e) => handlePersonalChange('complement', e.target.value)} />
-              </div>
+              {/* Endereço reutilizável (CEP preenche Rua/Bairro/Cidade/UF) */}
+              <AddressFields value={address} onChange={setAddress} />
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -245,7 +189,7 @@ export default function CandidateSetupPage() {
                 <select className={inputClass}
                   value={educationLevel}
                   onChange={(e) => setEducationLevel(Number(e.target.value))}>
-                  {educationLevels.map(lvl => (
+                  {educationLevels.map((lvl) => (
                     <option key={lvl.value} value={lvl.value}>{lvl.label}</option>
                   ))}
                 </select>
