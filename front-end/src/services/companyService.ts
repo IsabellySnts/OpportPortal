@@ -11,6 +11,12 @@ export interface CompanyResponse {
   phoneNumber: string;
   city: string;
   state: string;
+  zipCode?: string;
+  street?: string;
+  number?: string;
+  neighborhood?: string;
+  country?: string;
+  complement?: string;
 }
 
 export interface CreateCompanyRequest {
@@ -38,5 +44,10 @@ export const companyService = {
   getMe: async () => {
     const response = await api.get<ResultViewModel<CompanyResponse>>('/Company/me');
     return response.data;
-  }
+  },
+
+  update: async (id: number, data: CreateCompanyRequest) => {
+    const response = await api.put<ResultViewModel<boolean>>(`/Company/${id}`, data);
+    return response.data;
+  },
 };

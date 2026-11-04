@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { opportunityService } from '../../services/opportunityService';
+import { onlyDigits } from '../../utils/Masks';
 import Header from '../../components/layout/Header';
 
 const types = [
@@ -16,6 +17,11 @@ const formats = [
   { value: 3, label: 'Híbrido' },
 ];
 
+const maskSalary = (v: string) => {
+  const d = onlyDigits(v);
+  return d ? Number(d).toLocaleString('pt-BR') : '';
+};
+
 export default function NewOpportunityPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,7 +35,7 @@ export default function NewOpportunityPage() {
     requirements: '',
     fieldOfWork: '',
     state: '',
-    salary: '',
+    salary: '', // guarda já formatado: "6.000"
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -50,7 +56,7 @@ export default function NewOpportunityPage() {
         requirements: form.requirements,
         fieldOfWork: form.fieldOfWork,
         state: form.state,
-        salary: form.salary ? Number(form.salary) : 0,
+        salary: form.salary ? Number(onlyDigits(form.salary)) : 0,
       });
 
       if (!result.isSuccess) {
@@ -74,7 +80,8 @@ export default function NewOpportunityPage() {
 
       <Header
         navItems={[
-          { label: 'Meu Perfil', path: '/company/dashboard' },
+          { label: 'Minhas vagas', path: '/company/dashboard' },
+          { label: 'Meu Perfil', path: '/my-profile' },
         ]}
       />
 
@@ -150,10 +157,13 @@ export default function NewOpportunityPage() {
             <label className={labelClass} style={{ color: '#1B2A4A' }}>
               Remuneração (deixe vazio para "A combinar")
             </label>
-            <input className={inputClass} type="number" step="0.01"
-              value={form.salary}
-              onChange={(e) => handleChange('salary', e.target.value)}
-              placeholder="2500.00" />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">R$</span>
+              <input className={inputClass + ' pl-11'} inputMode="numeric"
+                value={form.salary}
+                onChange={(e) => handleChange('salary', maskSalary(e.target.value))}
+                placeholder="6.000" />
+            </div>
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}

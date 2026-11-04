@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
+import { useAuth } from '../contexts/AuthContext';
 
 // Auth
 import LoginPage from '../pages/auth/LoginPage';
@@ -18,12 +19,17 @@ import CompanySetupPage from '../pages/company/CompanySetupPage';
 import CompanyDashboardPage from '../pages/company/CompanyDashboardPage';
 import NewOpportunityPage from '../pages/company/NewOpportunityPage';
 import OpportunityCandidatesPage from '../pages/company/OpportunityCandidatesPage';
+import CompanyProfilePage from '../pages/company/CompanyProfilePage';
 
 // Settings
 import SettingsPage from '../pages/settings/SettingsPage';
 
 import RoleRoute from './RoleRoute';
 
+function MyProfile() {
+  const { userType } = useAuth();
+  return userType === 'Company' ? <CompanyProfilePage /> : <ProfilePage />;
+}
 
 export default function AppRoutes() {
   return (
@@ -55,8 +61,8 @@ export default function AppRoutes() {
       {/* Configurações */}
       <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
 
-      {/* Perfil */}
-      <Route path="/my-profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+      {/* Perfil (escolhe candidato x empresa) */}
+      <Route path="/my-profile" element={<PrivateRoute><MyProfile /></PrivateRoute>} />
 
       {/* Redirect padrão */}
       <Route path="/" element={<Navigate to="/opportunities" />} />

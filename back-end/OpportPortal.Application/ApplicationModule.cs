@@ -19,6 +19,7 @@ using OpportPortal.Application.Commands.Opportunities.CreateOpportunity;
 using OpportPortal.Application.Commands.Opportunities.DeleteOpportunity;
 using OpportPortal.Application.Commands.Opportunities.UpdateOpportunity;
 using OpportPortal.Application.Commands.Users.CreateUser;
+using OpportPortal.Application.Commands.Users.GoogleAuth;
 using OpportPortal.Application.Commands.Users.Login;
 using OpportPortal.Application.Common;
 using OpportPortal.Application.Queries.Candidates;
@@ -44,6 +45,7 @@ using OpportPortal.Application.Queries.Opportunities.GetAllOpportunities;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByCompanyId;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunitiesByFilter;
 using OpportPortal.Application.Queries.Opportunities.GetOpportunityById;
+using OpportPortal.Application.Services;
 using OpportPortal.Domain.Interfaces.Repositories;
 
 namespace OpportPortal.Application;
@@ -92,6 +94,8 @@ public static class ApplicationModule
         services.AddScoped<IHandler<GetCandidateByUserIdQuery, ResultViewModel<CandidateResponse>>, GetCandidateByUserIdHandler>();
         services.AddScoped<IHandler<GetCompanyByUserIdQuery, ResultViewModel<CompanyResponse>>, GetCompanyByUserIdHandler>();
         services.AddScoped<IHandler<GetOpportunitiesByCompanyIdQuery, ResultViewModel<IEnumerable<OpportunityResponse>>>, GetOpportunitiesByCompanyIdHandler>();
+        services.AddScoped<IHandler<GoogleAuthCommand, ResultViewModel<GoogleAuthResponse>>, GoogleAuthHandler>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 }

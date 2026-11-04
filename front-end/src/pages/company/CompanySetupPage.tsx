@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { companyService } from '../../services/companyService';
+import AddressFields, { Address, emptyAddress } from '../../components/ui/AddressFields';
+import PhoneInput from '../../components/ui/PhoneInput';
+import { SECTORS } from '../../constants/options';
+import { formatCnpj, onlyDigits } from '../../utils/Masks';
+import { notifySuccess, notifyError } from '../../components/ui/Alerts';
+import logo from '../../assets/graduate.png';
+
 
 export default function CompanySetupPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loadingData, setLoadingData] = useState(true);
+  const [isEdit, setIsEdit] = useState(false);
+  const [companyId, setCompanyId] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     companyName: '',
@@ -13,60 +22,104 @@ export default function CompanySetupPage() {
     sector: '',
     email: '',
     phoneNumber: '',
-    zipCode: '',
-    street: '',
-    number: '',
-    neighborhood: '',
-    city: '',
-    state: '',
-    country: 'Brasil',
-    complement: '',
   });
 
-  const handleChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  };
+  const [address, setAddress] = useState<Address>(emptyAddress);
+
+  // Se a empresa já existe, entra em modo edição e pré-preenche os dados
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await companyService.getMe();
+        if (result.isSuccess && result.data) {
+          const c = result.data;
+          setIsEdit(true);
+          setCompanyId(c.id);
+          setForm({
+            companyName: c.companyName ?? '',
+            cnpj: c.cnpj ?? '',
+            sector: c.sector ?? '',
+            email: c.email ?? '',
+            phoneNumber: c.phoneNumber ?? '',
+          });
+          setAddress({
+            ...emptyAddress,
+            zipCode: c.zipCode ?? '',
+            street: c.street ?? '',
+            number: c.number ?? '',
+            neighborhood: c.neighborhood ?? '',
+            city: c.city ?? '',
+            state: c.state ?? '',
+            complement: c.complement ?? '',
+          });
+        }
+      } catch {
+        // sem empresa ainda -> modo criação
+      } finally {
+        setLoadingData(false);
+      }
+    })();
+  }, []);
+
+  const handleChange = (field: string, value: string) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
+    const payload = {
+      ...form,
+      ...address,
+      country: 'Brasil',
+      complement: address.complement || undefined,
+    };
+
     try {
-      const result = await companyService.create({
-        ...form,
-        complement: form.complement || undefined,
-      });
+      const result = isEdit && companyId != null
+        ? await companyService.update(companyId, payload)
+        : await companyService.create(payload);
 
       if (!result.isSuccess) {
-        setError(result.message);
+        notifyError(result.message ?? 'Não foi possível salvar os dados da empresa.');
         return;
       }
 
-      navigate('/company/dashboard');
+      notifySuccess(isEdit ? 'Dados atualizados com sucesso!' : 'Empresa cadastrada com sucesso!');
+      navigate(isEdit ? '/my-profile' : '/company/dashboard');
     } catch {
-      setError('Erro ao cadastrar empresa. Tente novamente.');
+      notifyError('Erro ao salvar os dados. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
-  const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 bg-white";
-  const labelClass = "block text-sm font-medium mb-1";
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 bg-white';
+  const labelClass = 'block text-sm font-medium mb-1';
+
+  if (loadingData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
 
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
-            style={{ backgroundColor: '#1B2A4A' }}>
-            <span className="text-white font-bold text-xl">P</span>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+            style={{ backgroundColor: '#FFFFFF' }}>
+            <img src={logo} alt="Logo" className="w-6 h-6 object-contain" />
           </div>
           <h1 className="text-2xl font-bold" style={{ color: '#1B2A4A' }}>
-            Complete o cadastro da empresa
+            {isEdit ? 'Editar dados da empresa' : 'Complete o cadastro da empresa'}
           </h1>
-          <p className="text-gray-500">Preencha os dados para começar a publicar vagas</p>
+          <p className="text-gray-500">
+            {isEdit ? 'Atualize as informações da sua empresa' : 'Preencha os dados para começar a publicar vagas'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-8 space-y-4">
@@ -83,16 +136,18 @@ export default function CompanySetupPage() {
             <div>
               <label className={labelClass} style={{ color: '#1B2A4A' }}>CNPJ</label>
               <input className={inputClass} required
-                value={form.cnpj}
-                onChange={(e) => handleChange('cnpj', e.target.value)}
-                placeholder="12345678000195" />
+                value={formatCnpj(form.cnpj)}
+                onChange={(e) => handleChange('cnpj', onlyDigits(e.target.value).slice(0, 14))}
+                placeholder="00.000.000/0000-00" />
             </div>
             <div>
               <label className={labelClass} style={{ color: '#1B2A4A' }}>Ramo</label>
-              <input className={inputClass} required
+              <select className={inputClass} required
                 value={form.sector}
-                onChange={(e) => handleChange('sector', e.target.value)}
-                placeholder="Tecnologia" />
+                onChange={(e) => handleChange('sector', e.target.value)}>
+                <option value="">Selecione</option>
+                {SECTORS.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
           </div>
 
@@ -106,74 +161,29 @@ export default function CompanySetupPage() {
             </div>
             <div>
               <label className={labelClass} style={{ color: '#1B2A4A' }}>Telefone</label>
-              <input className={inputClass} required
-                value={form.phoneNumber}
-                onChange={(e) => handleChange('phoneNumber', e.target.value)}
-                placeholder="11999999999" />
+              <PhoneInput value={form.phoneNumber} onChange={(v) => handleChange('phoneNumber', v)} required />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>CEP</label>
-              <input className={inputClass} required
-                value={form.zipCode}
-                onChange={(e) => handleChange('zipCode', e.target.value)}
-                placeholder="00000000" />
-            </div>
-            <div className="col-span-2">
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>Rua</label>
-              <input className={inputClass} required
-                value={form.street}
-                onChange={(e) => handleChange('street', e.target.value)} />
-            </div>
+          {/* Endereço reutilizável (CEP preenche Rua/Bairro/Cidade/UF) */}
+          <AddressFields value={address} onChange={setAddress} />
+
+          <div className="flex gap-3 pt-2">
+            {isEdit && (
+              <button type="button" onClick={() => navigate('/my-profile')}
+                className="flex-1 py-3 rounded-xl font-semibold border-2"
+                style={{ borderColor: '#1B2A4A', color: '#1B2A4A' }}>
+                Cancelar
+              </button>
+            )}
+            <button type="submit" disabled={loading}
+              className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-50"
+              style={{ backgroundColor: '#1B2A4A' }}>
+              {loading
+                ? (isEdit ? 'Salvando...' : 'Cadastrando...')
+                : (isEdit ? 'Salvar alterações' : 'Finalizar cadastro')}
+            </button>
           </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>Número</label>
-              <input className={inputClass} required
-                value={form.number}
-                onChange={(e) => handleChange('number', e.target.value)} />
-            </div>
-            <div className="col-span-2">
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>Bairro</label>
-              <input className={inputClass} required
-                value={form.neighborhood}
-                onChange={(e) => handleChange('neighborhood', e.target.value)} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2">
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>Cidade</label>
-              <input className={inputClass} required
-                value={form.city}
-                onChange={(e) => handleChange('city', e.target.value)} />
-            </div>
-            <div>
-              <label className={labelClass} style={{ color: '#1B2A4A' }}>UF</label>
-              <input className={inputClass} required maxLength={2}
-                value={form.state}
-                onChange={(e) => handleChange('state', e.target.value.toUpperCase())}
-                placeholder="SP" />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass} style={{ color: '#1B2A4A' }}>Complemento (opcional)</label>
-            <input className={inputClass}
-              value={form.complement}
-              onChange={(e) => handleChange('complement', e.target.value)} />
-          </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button type="submit" disabled={loading}
-            className="w-full py-3 rounded-xl font-semibold text-white disabled:opacity-50"
-            style={{ backgroundColor: '#1B2A4A' }}>
-            {loading ? 'Cadastrando...' : 'Finalizar cadastro'}
-          </button>
         </form>
       </div>
     </div>

@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OpportPortal.Domain.Interfaces.Repositories;
 using OpportPortal.Domain.Interfaces.Services;
+using OpportPortal.Infrastructure.Auth;
 using OpportPortal.Infrastructure.Persistence;
 using OpportPortal.Infrastructure.Persistence.Repositories;
+using OpportPortal.Infrastructure.Services;
 using System.Text;
-using OpportPortal.Infrastructure.Auth;
-using OpportPortal.Domain.Interfaces.Repositories;
 
 namespace OpportPortal.Infrastructure
 {
@@ -83,9 +84,17 @@ namespace OpportPortal.Infrastructure
             services.AddScoped<IExperienceRepository, ExperienceRepository>();
             services.AddScoped<IOpportunityRepository, OpportunityRepository>();
             services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
-
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddHttpClient<IEmailService, BrevoEmailService>((sp, client) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                client.BaseAddress = new Uri("https://api.brevo.com/");
+                client.DefaultRequestHeaders.Add("api-key", config["Brevo:ApiKey"]);
+            });
             return services;
         }
+
 
     }
 }

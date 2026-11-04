@@ -15,6 +15,7 @@ public class OpportPortalDbContext : DbContext
     public DbSet<Experience> Experiences { get; set; }
     public DbSet<JobApplication> JobApplications { get; set; }
     public DbSet<Opportunity> Opportunities { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -23,7 +24,11 @@ public class OpportPortalDbContext : DbContext
             e.HasKey(u => u.Id);
             e.Property(o => o.Id)
                 .UseIdentityColumn();
-            e.Property(u => u.Password).IsRequired();
+            e.Property(u => u.Password);
+            e.Property(u => u.Provider)
+                .IsRequired()
+                .HasConversion<string>()
+                .HasMaxLength(20);
             e.Property(u => u.Type).IsRequired().HasConversion<string>().HasMaxLength(50);
 
             e.OwnsOne(c => c.UserEmail, email =>
@@ -371,6 +376,19 @@ public class OpportPortalDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             e.HasQueryFilter(u => !u.IsDeleted);
+        });
+
+        builder.Entity<Notification>(e =>
+        {
+            e.HasKey(n => n.Id);
+            e.Property(o => o.Id).UseIdentityColumn();
+            e.Property(n => n.Title).IsRequired().HasMaxLength(150);
+            e.Property(n => n.Message).IsRequired().HasMaxLength(500);
+            e.Property(n => n.Type).IsRequired().HasConversion<string>().HasMaxLength(30);
+            e.Property(n => n.CreatedAt).IsRequired();
+            e.Property(n => n.UpdatedAt);
+            e.HasOne<User>().WithMany().HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.HasQueryFilter(n => !n.IsDeleted);
         });
 
         base.OnModelCreating(builder);

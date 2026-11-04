@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { candidateService } from '../../services/candidateService';
 import { companyService } from '../../services/companyService';
 import logo from '../../assets/graduate.png';
+import NotificationBell from './NotificationBell';
 
 interface NavItem {
   label: string;
@@ -87,6 +88,7 @@ export default function Header({ navItems = [] }: HeaderProps) {
               </button>
             );
           })}
+          <NotificationBell />
 
           {/* Iniciais → perfil */}
           <div

@@ -1,5 +1,6 @@
 import api from './api';
 import { ResultViewModel, LoginResponse } from '../types';
+import { GoogleAuthResponse } from '../types/GoogleAuthResponse';
 
 export const authService = {
   login: async (email: string, password: string) => {
@@ -17,5 +18,13 @@ export const authService = {
       type
     });
     return response.data;
-  }
+  },
+
+  googleAuth: async (idToken: string, type?: number) => {
+    const response = await api.post<ResultViewModel<GoogleAuthResponse>>('/User/google-auth', {
+      idToken,
+      userType: type,
+    });
+    return response.data;
+  },
 };
