@@ -12,6 +12,7 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
     private readonly IJobApplicationRepository _jobApplicationRepository;
     private readonly ICandidateRepository _candidateRepository;
     private readonly IOpportunityRepository _opportunityRepository;
+    private readonly ICompanyRepository _companyRepository;
     private readonly IUserRepository _userRepository;
     private readonly IEmailService _emailService;
     private readonly INotificationService _notificationService;
@@ -20,6 +21,7 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
         IJobApplicationRepository jobApplicationRepository,
         ICandidateRepository candidateRepository,
         IOpportunityRepository opportunityRepository,
+        ICompanyRepository companyRepository,
         IUserRepository userRepository,
         IEmailService emailService,
         INotificationService notificationService)
@@ -27,6 +29,7 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
         _jobApplicationRepository = jobApplicationRepository;
         _candidateRepository = candidateRepository;
         _opportunityRepository = opportunityRepository;
+        _companyRepository = companyRepository;
         _userRepository = userRepository;
         _emailService = emailService;
         _notificationService = notificationService;
@@ -71,6 +74,16 @@ public class CreateJobApplicationHandler : IHandler<CreateJobApplicationCommand,
             var (subject, html) = EmailTemplates.ApplicationCreated(candidate.FullName, opportunity.Title);
             await _emailService.SendAsync(user.UserEmail.Value, candidate.FullName, subject, html);
             await _notificationService.NotifyAsync(request.UserId, "Candidatura enviada ✅", $"Sua candidatura para '{opportunity.Title}' foi registrada.", NotificationType.ApplicationCreated);
+        }
+
+        var company = await _companyRepository.GetByIdAsync(opportunity.CompanyId);
+        if (company is not null)
+        {
+            await _notificationService.NotifyAsync(
+                company.UserId,
+                "Novo candidato 📩",
+                $"{candidate.FullName} se candidatou à vaga '{opportunity.Title}'.",
+                NotificationType.General);
         }
 
         return ResultViewModel<long>.Success(applicationId, "Application submitted successfully.");
